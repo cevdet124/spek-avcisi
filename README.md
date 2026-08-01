@@ -1,18 +1,31 @@
-# Spek Avcısı V18 Pro
+# Spek Avcısı V19 Pro + Backtest
 
-Modüler Streamlit tabanlı BIST teknik karar destek sistemi.
+V18 Pro analiz motoruna geçmiş performans testi eklenmiş sürüm.
+
+## Yeni özellik
+Backtest sekmesi, geçmişte oluşan sinyalleri yalnızca o tarihe kadar bilinen
+verilerle hesaplar ve seçilen 5, 10 veya 20 işlem günü sonrasındaki performansı
+ölçer.
+
+## Gösterilen ölçümler
+- İşlem sayısı
+- Başarı oranı
+- Ortalama ve medyan net getiri
+- Bileşik getiri
+- Maksimum düşüş
+- Kâr faktörü
+- Ortalama lehte ve aleyhte hareket
+- Geçmiş sinyal tablosu
+- Bileşik getiri eğrisi
 
 ## Dosyalar
-- `app.py`: kullanıcı arayüzü
-- `engine.py`: analiz ve tarama motoru
-- `universe.py`: başlangıç BIST sembol evreni
-- `requirements.txt`: bağımlılıklar
+- `app.py`
+- `engine.py`
+- `backtest.py`
+- `universe.py`
+- `requirements.txt`
 
-## Kurulum
-Dosyaları GitHub deponuzun kök dizinine yükleyin. Streamlit Community Cloud
-değişiklikleri otomatik olarak yeniden dağıtır.
-
-## Önemli sınır
-Bu uygulama gerçek emir defteri, kademe, kurum takası veya belirli yatırımcı
-işlemlerini doğrudan göstermez. Toplama, dağıtım, kurumsal para ve sahte hareket
-etiketleri fiyat-hacim verilerinden türetilen teknik olasılık göstergeleridir.
+## Önemli
+Geçmiş performans gelecekteki sonucu garanti etmez. Backtest; veri kalitesi,
+işlem maliyetleri, likidite, fiyat kayması ve model seçimi gibi etkenlere
+duyarlıdır.

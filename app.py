@@ -3,15 +3,16 @@ import pandas as pd
 import yfinance as yf
 
 from engine import analyze_frame, download_one, scan_universe
+from backtest import BacktestConfig, run_backtest
 from universe import BIST_SYMBOLS
 
 st.set_page_config(
-    page_title="Spek Avcısı V18 Pro",
+    page_title="Spek Avcısı V19 Pro + Backtest",
     page_icon="🦅",
     layout="wide",
 )
 
-st.title("🦅 Spek Avcısı V18 Pro")
+st.title("🦅 Spek Avcısı V19 Pro + Backtest")
 st.caption(
     "Çok katmanlı teknik karar destek sistemi: trend, kurumsal para, "
     "hareket hazırlığı, sahte hareket, risk ve işlem kalitesi."
@@ -51,10 +52,11 @@ def market_filter():
 market_score, market_text = market_filter()
 st.info(f"Piyasa filtresi: {market_text}")
 
-tab1, tab2, tab3 = st.tabs([
+tab1, tab2, tab3, tab4 = st.tabs([
     "🔎 Tek Hisse",
     "📡 BIST Tarayıcı",
-    "🧪 Model ve Sınırlar",
+    "🧪 Backtest",
+    "ℹ️ Model ve Sınırlar",
 ])
 
 with tab1:
@@ -205,8 +207,107 @@ with tab2:
                 use_container_width=True,
             )
 
+
 with tab3:
-    st.subheader("V18 Pro ne yapar?")
+    st.subheader("🧪 Geçmiş Performans Testi")
+    st.caption(
+        "Backtest yalnızca o tarihe kadar bilinen verileri kullanır; "
+        "gelecek fiyatlar sadece sonucu ölçmek için kullanılır."
+    )
+
+    bt_symbol = st.text_input(
+        "Backtest hissesi",
+        value="THYAO",
+        key="bt_symbol",
+    ).strip().upper()
+
+    b1, b2, b3 = st.columns(3)
+    horizon = b1.selectbox(
+        "Sonuç ölçüm süresi",
+        [5, 10, 20],
+        index=1,
+        format_func=lambda x: f"{x} işlem günü",
+    )
+    min_score = b2.slider("Minimum Spek İz", 40, 85, 60, 5)
+    max_risk = b3.slider("Maksimum Risk", 20, 80, 55, 5)
+
+    b4, b5, b6 = st.columns(3)
+    min_confidence = b4.slider("Minimum Güven", 40, 85, 55, 5)
+    step = b5.selectbox(
+        "Sinyal kontrol sıklığı",
+        [1, 3, 5],
+        index=1,
+        format_func=lambda x: f"Her {x} günde",
+    )
+    fee_bps = b6.number_input(
+        "Toplam işlem maliyeti (baz puan)",
+        min_value=0.0,
+        max_value=200.0,
+        value=20.0,
+        step=5.0,
+    )
+
+    if st.button("🧪 BACKTESTİ BAŞLAT", use_container_width=True):
+        with st.spinner("Geçmiş sinyaller test ediliyor..."):
+            bt_frame = cached_one(bt_symbol)
+            config = BacktestConfig(
+                horizon=int(horizon),
+                step=int(step),
+                min_score=int(min_score),
+                max_risk=int(max_risk),
+                min_confidence=int(min_confidence),
+                fee_bps=float(fee_bps),
+            )
+            bt_result = (
+                run_backtest(bt_frame, market_score=market_score, config=config)
+                if bt_frame is not None
+                else {"summary": {}, "trades": pd.DataFrame(), "equity": pd.DataFrame()}
+            )
+
+        summary = bt_result["summary"]
+        trades = bt_result["trades"]
+        equity = bt_result["equity"]
+
+        if not summary:
+            st.warning("Bu ayarlarla yeterli geçmiş sinyal bulunamadı.")
+        else:
+            st.success(f"{bt_symbol} backtest tamamlandı.")
+
+            metric_items = list(summary.items())
+            first = st.columns(5)
+            for col, (label, value) in zip(first, metric_items[:5]):
+                col.metric(label, value)
+
+            second = st.columns(4)
+            for col, (label, value) in zip(second, metric_items[5:9]):
+                col.metric(label, value)
+
+            st.subheader("📈 Strateji Bileşik Getiri Eğrisi")
+            st.line_chart(equity)
+
+            st.subheader("📋 Geçmiş Sinyaller")
+            st.dataframe(
+                trades.sort_values("Tarih", ascending=False),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+            csv = trades.to_csv(index=False).encode("utf-8-sig")
+            st.download_button(
+                "📥 BACKTEST İŞLEMLERİNİ İNDİR",
+                data=csv,
+                file_name=f"{bt_symbol}_v19_backtest.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
+
+            st.info(
+                "Başarı oranı tek başına yeterli değildir. İşlem sayısı, ortalama getiri, "
+                "maksimum düşüş, kâr faktörü ve farklı dönemlerde tutarlılık birlikte değerlendirilmelidir."
+            )
+
+with tab4:
+    st.subheader("V19 Pro ne yapar?")
     st.write(
         "Model; günlük ve haftalık trend, RSI, MACD, CMF, MFI, OBV, A/D Line, "
         "hacim devamlılığı, ATR, likidite, sıkışma, kırılım ve BIST piyasa "
