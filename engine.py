@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from indicators import ad_line, atr, bollinger_width, cmf, macd, mfi, obv, rsi
+from intelligence import confidence_stars, coach_decision, money_flow_trend, risk_breakdown, trend_phase
 
 
 def safe_float(value: Any, default: float = 0.0) -> float:
@@ -277,15 +278,76 @@ def analyze(frame: pd.DataFrame, market: int = 55) -> dict[str, Any] | None:
     else:
         ai_comment = "Trend, para veya risk koşulları yeni pozisyon için yeterli değil."
 
+
+    trend_phase_label, trend_phase_score = trend_phase(
+        close,
+        ma20,
+        ma50,
+        ma100,
+    )
+
+    money_label, money_trend_score, money_components = money_flow_trend(
+        cmf_s,
+        obv_s,
+        ad_s,
+        volume,
+    )
+
+    risk_parts = risk_breakdown(
+        last_rsi,
+        atr_pct,
+        liquidity,
+        distance_to_resistance,
+        market,
+    )
+
+    calibrated_risk = int(round(
+        risk * 0.45
+        + risk_parts["Toplam"] * 0.55
+    ))
+
+    evidence_count = sum([
+        trend_score >= 70,
+        weekly_score >= 65,
+        institutional >= 65,
+        volume_score >= 60,
+        momentum >= 60,
+        preparation >= 60,
+    ])
+
+    calibrated_confidence = int(np.clip(
+        confidence * 0.70
+        + evidence_count / 6 * 100 * 0.30
+        - max(0, calibrated_risk - 50) * 0.20,
+        0,
+        100,
+    ))
+
+    coach_text = coach_decision(
+        {
+            "Sınıf": cls,
+            "Karar": decision,
+        },
+        trend_phase_label,
+        money_label,
+        risk_parts,
+    )
+
     return {
         "Fiyat": price,
         "Günlük %": daily_change,
         "Spek İz": spek,
-        "Güven": confidence,
+        "Güven": calibrated_confidence,
+        "Güven Yıldızı": confidence_stars(calibrated_confidence),
         "İşlem Kalitesi": trade_quality,
-        "Risk": risk,
+        "Risk": calibrated_risk,
         "Trend Gücü": trend_score,
+        "Trend Evresi": trend_phase_label,
+        "Trend Evre Puanı": trend_phase_score,
         "Kurumsal Para": institutional,
+        "Para Akışı Yönü": money_label,
+        "Para Akışı Puanı": money_trend_score,
+        "Para Bileşenleri": money_components,
         "Hareket Hazırlığı": preparation,
         "Momentum": momentum,
         "Likidite": liquidity,
@@ -302,6 +364,8 @@ def analyze(frame: pd.DataFrame, market: int = 55) -> dict[str, Any] | None:
         "Karar": decision,
         "Sınıf": cls,
         "AI Yorum": ai_comment,
+        "AI Koçu": coach_text,
+        "Risk Bileşenleri": risk_parts,
         "Olumlu Nedenler": reasons or ["Belirgin güçlü teyit oluşmadı."],
         "Uyarılar": warnings or ["Belirgin ek risk uyarısı yok."],
         "Veri Tarihi": str(frame.index[-1])[:10],

@@ -1,9 +1,7 @@
-import json
-
 import pandas as pd
 import streamlit as st
 
-from config import APP_TITLE, DEFAULT_FAVORITES, DEFAULT_PORTFOLIO
+from config import DEFAULT_FAVORITES, DEFAULT_PORTFOLIO
 from dashboard import show_daily_summary, show_market_header, show_portfolio_health
 from data import download_market, download_symbol
 from engine import analyze, market_score
@@ -19,6 +17,8 @@ from scanner import scan
 from universe import BIST_SYMBOLS
 
 
+APP_TITLE = "Spek Avcısı V23 Intelligence"
+
 st.set_page_config(
     page_title=APP_TITLE,
     page_icon="🦅",
@@ -27,8 +27,7 @@ st.set_page_config(
 
 st.title(f"🦅 {APP_TITLE}")
 st.caption(
-    "Günlük dashboard, portföy sağlık puanı, favoriler, alarm merkezi "
-    "ve açıklanabilir teknik kararlar."
+    "Trend evresi, para akışı yönü, parçalı risk motoru, karar güveni ve AI Koçu."
 )
 
 
@@ -63,7 +62,7 @@ show_market_header(market_text)
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🏠 Dashboard",
-    "🔎 Tek Hisse",
+    "🧠 Intelligence",
     "📂 Portföyüm",
     "⭐ Favoriler",
     "📡 BIST Tarayıcı",
@@ -71,10 +70,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 
 
 with tab1:
-    if st.button(
-        "🔄 DASHBOARD'U GÜNCELLE",
-        use_container_width=True,
-    ):
+    if st.button("🔄 DASHBOARD'U GÜNCELLE", use_container_width=True):
         with st.spinner("Portföy ve alarmlar güncelleniyor..."):
             st.session_state.portfolio_result = cached_portfolio(
                 tuple(st.session_state.portfolio_symbols),
@@ -96,13 +92,10 @@ with tab2:
     symbol = st.text_input(
         "Hisse kodu",
         value="THYAO",
-        key="single_symbol",
+        key="intelligence_symbol",
     ).strip().upper()
 
-    if st.button(
-        "🦅 PROFESYONEL ANALİZ",
-        use_container_width=True,
-    ):
+    if st.button("🧠 INTELLIGENCE ANALİZİ", use_container_width=True):
         frame = cached_symbol(symbol)
         result = analyze(frame, market=market_value) if frame is not None else None
 
@@ -118,32 +111,49 @@ with tab2:
                 f"{result['Fiyat']:.2f} TL",
                 f"%{result['Günlük %']:.2f}",
             )
-            c2.metric("Spek İz", f"{result['Spek İz']}/100")
-            c3.metric("Güven", f"{result['Güven']}/100")
+            c2.metric("Güven", f"{result['Güven']}/100")
+            c3.metric("Güvenilirlik", result["Güven Yıldızı"])
             c4.metric("İşlem Kalitesi", f"{result['İşlem Kalitesi']}/100")
-            c5.metric("Risk", f"{result['Risk']}/100")
+            c5.metric("Toplam Risk", f"{result['Risk']}/100")
 
-            st.subheader("🧠 AI Analist")
-            st.success(result["AI Yorum"])
+            st.subheader("🧬 Trend DNA")
+            t1, t2, t3 = st.columns(3)
+            t1.metric("Trend Evresi", result["Trend Evresi"])
+            t2.metric("Trend Gücü", f"{result['Trend Gücü']}/100")
+            t3.metric("Hareket Hazırlığı", f"{result['Hareket Hazırlığı']}/100")
 
+            st.subheader("💰 Para Akışı")
+            p1, p2 = st.columns(2)
+            p1.metric("Para Akışı Yönü", result["Para Akışı Yönü"])
+            p2.metric("Para Akışı Puanı", f"{result['Para Akışı Puanı']}/100")
+
+            para_df = pd.DataFrame(
+                {
+                    "Bileşen": list(result["Para Bileşenleri"].keys()),
+                    "Puan": list(result["Para Bileşenleri"].values()),
+                }
+            )
+            st.dataframe(para_df, use_container_width=True, hide_index=True)
+
+            st.subheader("🛡️ Risk Motoru")
+            risk_df = pd.DataFrame(
+                {
+                    "Risk Kaynağı": list(result["Risk Bileşenleri"].keys()),
+                    "Puan": list(result["Risk Bileşenleri"].values()),
+                }
+            )
+            st.dataframe(risk_df, use_container_width=True, hide_index=True)
+
+            st.subheader("🤖 AI Koçu")
+            st.info(result["AI Koçu"])
+
+            st.subheader("✅ Kanıtlar")
             for item in result["Olumlu Nedenler"]:
                 st.write("✅", item)
 
+            st.subheader("⚠️ Dikkat")
             for item in result["Uyarılar"]:
                 st.write("⚠️", item)
-
-            st.subheader("📊 Güç Haritası")
-            cols = st.columns(6)
-            metrics = [
-                ("Trend", result["Trend Gücü"]),
-                ("Kurumsal Para", result["Kurumsal Para"]),
-                ("Hareket Hazırlığı", result["Hareket Hazırlığı"]),
-                ("Momentum", result["Momentum"]),
-                ("Likidite", result["Likidite"]),
-                ("Spekülatif Risk", result["Spekülatif Risk"]),
-            ]
-            for col, (label, value) in zip(cols, metrics):
-                col.metric(label, f"{value}/100")
 
             z1, z2, z3, z4 = st.columns(4)
             z1.metric("Destek", f"{result['Destek']:.2f} TL")
@@ -154,12 +164,13 @@ with tab2:
             )
             z4.metric("Kontrol", f"{result['Kontrol']:.2f} TL")
 
-            chart = pd.DataFrame({
-                "Kapanış": frame["Close"],
-                "MA20": frame["Close"].rolling(20).mean(),
-                "MA50": frame["Close"].rolling(50).mean(),
-            }).tail(180)
-
+            chart = pd.DataFrame(
+                {
+                    "Kapanış": frame["Close"],
+                    "MA20": frame["Close"].rolling(20).mean(),
+                    "MA50": frame["Close"].rolling(50).mean(),
+                }
+            ).tail(180)
             st.line_chart(chart)
 
 
@@ -174,50 +185,32 @@ with tab3:
 
     p1, p2 = st.columns(2)
 
-    if p1.button(
-        "💾 PORTFÖYÜ UYGULA",
-        use_container_width=True,
-    ):
-        symbols = normalize_symbols(portfolio_text)
-        st.session_state.portfolio_symbols = symbols
+    if p1.button("💾 PORTFÖYÜ UYGULA", use_container_width=True):
+        st.session_state.portfolio_symbols = normalize_symbols(portfolio_text)
         st.session_state.portfolio_result = pd.DataFrame()
-        st.success(f"{len(symbols)} hisse portföye uygulandı.")
+        st.success("Portföy listesi güncellendi.")
 
-    if p2.button(
-        "📊 PORTFÖYÜ ANALİZ ET",
-        use_container_width=True,
-    ):
+    if p2.button("📊 PORTFÖYÜ ANALİZ ET", use_container_width=True):
         with st.spinner("Portföy analiz ediliyor..."):
-            table = cached_portfolio(
+            st.session_state.portfolio_result = cached_portfolio(
                 tuple(st.session_state.portfolio_symbols),
                 market_value,
             )
-            st.session_state.portfolio_result = table
 
     table = st.session_state.portfolio_result
 
     if not table.empty:
-        health = portfolio_health(table)
-        alerts = create_alerts(table)
+        show_portfolio_health(portfolio_health(table))
 
-        show_portfolio_health(health)
-
-        st.subheader("📋 Portföy Tablosu")
-        st.dataframe(
-            table,
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.subheader("📋 Portföy Intelligence Tablosu")
+        st.dataframe(table, use_container_width=True, hide_index=True)
 
         st.subheader("🔔 Alarm Merkezi")
+        alerts = create_alerts(table)
         if alerts.empty:
             st.success("Aktif alarm bulunmuyor.")
         else:
-            st.dataframe(
-                alerts,
-                use_container_width=True,
-                hide_index=True,
-            )
+            st.dataframe(alerts, use_container_width=True, hide_index=True)
 
 
 with tab4:
@@ -231,18 +224,11 @@ with tab4:
 
     f1, f2 = st.columns(2)
 
-    if f1.button(
-        "💾 FAVORİLERİ UYGULA",
-        use_container_width=True,
-    ):
-        symbols = normalize_symbols(favorite_text)
-        st.session_state.favorite_symbols = symbols
-        st.success(f"{len(symbols)} favori kaydedildi.")
+    if f1.button("💾 FAVORİLERİ UYGULA", use_container_width=True):
+        st.session_state.favorite_symbols = normalize_symbols(favorite_text)
+        st.success("Favori listesi güncellendi.")
 
-    if f2.button(
-        "⭐ FAVORİLERİ TARA",
-        use_container_width=True,
-    ):
+    if f2.button("⭐ FAVORİLERİ TARA", use_container_width=True):
         with st.spinner("Favoriler analiz ediliyor..."):
             favorite_table = cached_scan(
                 tuple(st.session_state.favorite_symbols),
@@ -252,39 +238,28 @@ with tab4:
         if favorite_table.empty:
             st.warning("Favorilerden sonuç üretilemedi.")
         else:
-            st.dataframe(
-                favorite_table,
-                use_container_width=True,
-                hide_index=True,
-            )
+            st.dataframe(favorite_table, use_container_width=True, hide_index=True)
 
-    st.subheader("💾 Liste Yedekleme")
-
-    export_content = export_lists(
+    backup = export_lists(
         st.session_state.portfolio_symbols,
         st.session_state.favorite_symbols,
     )
 
     st.download_button(
-        "📥 PORTFÖY VE FAVORİLERİ İNDİR",
-        data=export_content.encode("utf-8"),
-        file_name="spek_avcisi_listeler.json",
+        "📥 LİSTELERİ YEDEKLE",
+        data=backup.encode("utf-8"),
+        file_name="spek_avcisi_v23_listeler.json",
         mime="application/json",
         use_container_width=True,
     )
 
-    uploaded = st.file_uploader(
-        "Daha önce indirdiğin liste JSON dosyasını yükle",
-        type=["json"],
-    )
-
+    uploaded = st.file_uploader("Liste JSON dosyasını geri yükle", type=["json"])
     if uploaded is not None:
         try:
-            content = uploaded.getvalue().decode("utf-8")
-            imported_portfolio, imported_favorites = import_lists(content)
-            st.session_state.portfolio_symbols = imported_portfolio
-            st.session_state.favorite_symbols = imported_favorites
-            st.success("Portföy ve favoriler içe aktarıldı.")
+            p, f = import_lists(uploaded.getvalue().decode("utf-8"))
+            st.session_state.portfolio_symbols = p
+            st.session_state.favorite_symbols = f
+            st.success("Listeler geri yüklendi.")
         except Exception as exc:
             st.error(f"Dosya okunamadı: {exc}")
 
@@ -296,33 +271,19 @@ with tab5:
         index=0,
     )
 
-    selected = (
-        BIST_SYMBOLS
-        if scope == "TÜM LİSTE"
-        else BIST_SYMBOLS[:int(scope)]
-    )
+    selected = BIST_SYMBOLS if scope == "TÜM LİSTE" else BIST_SYMBOLS[:int(scope)]
 
-    if st.button(
-        "🦅 PRO TARAMAYI BAŞLAT",
-        use_container_width=True,
-    ):
+    if st.button("🦅 INTELLIGENCE TARAMASINI BAŞLAT", use_container_width=True):
         with st.spinner(f"{len(selected)} hisse taranıyor..."):
-            result_table = cached_scan(
-                tuple(selected),
-                market_value,
-            )
+            result_table = cached_scan(tuple(selected), market_value)
 
         if result_table.empty:
             st.error("Tarama sonucu üretilemedi.")
         else:
             st.success(f"{len(result_table)} hisse analiz edildi.")
 
-            st.subheader("🏆 Bugünün En İyi 10'u")
-            st.dataframe(
-                result_table.head(10),
-                use_container_width=True,
-                hide_index=True,
-            )
+            st.subheader("🏆 En Kaliteli 10")
+            st.dataframe(result_table.head(10), use_container_width=True, hide_index=True)
 
             st.subheader("🆕 Yeni Güçlenenler")
             new_strength = result_table[
@@ -330,49 +291,30 @@ with tab5:
                 & (result_table["Risk"] <= 45)
                 & (result_table["Güven"] >= 60)
             ]
+            st.dataframe(new_strength, use_container_width=True, hide_index=True)
 
-            st.dataframe(
-                new_strength,
-                use_container_width=True,
-                hide_index=True,
-            )
-
-            st.subheader("🚨 Sahte Hareket / Dağıtım Uyarıları")
+            st.subheader("🚨 Sahte Hareket / Dağıtım")
             alert_table = result_table[
                 result_table["Sahte Hareket"].str.contains(
                     "Şüphe|zayıf",
                     case=False,
                     na=False,
                 )
-                | result_table["Toplama/Dağıtım"].str.contains(
-                    "Dağıtım",
-                    na=False,
-                )
+                | result_table["Toplama/Dağıtım"].str.contains("Dağıtım", na=False)
             ]
-
-            st.dataframe(
-                alert_table,
-                use_container_width=True,
-                hide_index=True,
-            )
+            st.dataframe(alert_table, use_container_width=True, hide_index=True)
 
             csv = result_table.to_csv(index=False).encode("utf-8-sig")
             st.download_button(
                 "📥 TARAMA SONUÇLARINI İNDİR",
                 data=csv,
-                file_name="spek_avcisi_v22_scan.csv",
+                file_name="spek_avcisi_v23_scan.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
 
 
-st.info(
-    "Portföy ve favoriler Streamlit oturumu içinde tutulur. "
-    "Kalıcı saklama için JSON yedekleme düğmesini kullan. "
-    "Bu sürüm arka planda telefon bildirimi göndermez; alarm merkezi uygulama açıldığında hesaplanır."
-)
-
 st.warning(
-    "Bu sistem fiyat, hacim ve teknik göstergelerden olasılık üretir. "
+    "Bu sistem fiyat ve hacim verilerinden olasılık üretir. "
     "Gerçek emir defteri, kurum takası veya belirli yatırımcı işlemlerini doğrudan göstermez."
 )

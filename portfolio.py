@@ -41,8 +41,12 @@ def portfolio_table(symbols: list[str], market: int) -> pd.DataFrame:
             status = "🔥 Riski Azalt / Kovalama"
         elif result["Sınıf"] == "C":
             status = "🟡 Nötr / Bekle"
+        elif result["Sınıf"] == "D" and result["Risk"] >= 60:
+            status = "🔴 Çıkış / Risk İncele"
+        elif result["Sınıf"] == "D":
+            status = "🟡 Zayıf — Bekle / İzle"
         else:
-            status = "🔴 Zayıf / Çıkış İncele"
+            status = "🟡 Nötr / Bekle"
 
         rows.append({
             "Hisse": symbol,
@@ -57,7 +61,11 @@ def portfolio_table(symbols: list[str], market: int) -> pd.DataFrame:
             "Kontrol": round(result["Kontrol"], 2),
             "Hedef Alt": round(result["Hedef Alt"], 2),
             "Hedef Üst": round(result["Hedef Üst"], 2),
+            "Trend Evresi": result["Trend Evresi"],
+            "Para Akışı": result["Para Akışı Yönü"],
+            "Güven Yıldızı": result["Güven Yıldızı"],
             "AI Yorum": result["AI Yorum"],
+            "AI Koçu": result["AI Koçu"],
         })
 
     if not rows:

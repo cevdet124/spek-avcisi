@@ -12,3 +12,10 @@
 - AI Analist yorumları.
 - Bugünün En İyi 10'u.
 - Hızlı tarama ve kalite sıralaması.
+
+## V23 Intelligence
+- Trend DNA eklendi.
+- Para akışı yönü ve bileşenleri eklendi.
+- Parçalı risk motoru eklendi.
+- Güven yıldızı ve AI Koçu eklendi.
+- Düşük riskli zayıf hisselerde yanlış çıkış etiketleri azaltıldı.

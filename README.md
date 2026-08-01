@@ -1,24 +1,22 @@
-# Spek Avcısı V22 Portfolio Pro
+# Spek Avcısı V23 Intelligence
 
-V21 Daily Pro üzerine portföy, favoriler, dashboard ve alarm merkezi eklenmiş sürüm.
+V22 üzerine açıklanabilir karar zekâsı eklenmiş sürüm.
 
-## Yeni özellikler
-- Günlük Dashboard
-- Portföy sağlık puanı
-- Portföy analiz tablosu
-- Alarm merkezi
-- Favori hisseler
-- Portföy/favori JSON yedekleme ve geri yükleme
-- Bugünün En İyi 10'u
-- AI Analist yorumları
+## Yeni modüller
+- Trend DNA: Başlıyor / Güçleniyor / Olgun / Zayıflıyor / Bitti
+- Para akışı yönü ve bileşenleri
+- Parçalı risk motoru
+- Güven yıldızı
+- AI Koçu
+- Daha dengeli portföy kararları
+- Intelligence tarama tablosu
 
-## Kalıcılık sınırı
-Streamlit Community Cloud yerel dosya sisteminde kalıcı kullanıcı verisi garanti etmez.
-Bu nedenle portföy ve favoriler oturum içinde tutulur ve JSON olarak dışa aktarılabilir.
-
-## Alarm sınırı
-Bu sürüm uygulama içi alarm merkezi üretir. Arka planda telefon bildirimi veya e-posta
-gönderimi yapmaz.
+## Risk bileşenleri
+- RSI
+- Volatilite
+- Likidite
+- Direnç
+- Piyasa
 
 ## Uyarı
 Bu uygulama yatırım tavsiyesi değildir.
