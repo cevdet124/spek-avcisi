@@ -811,7 +811,42 @@ with sekme1:
                 f"{sonuc['Kontrol']:.2f}"
             )
 
+# ==============================================
+# V14 TREND - HEDEF - ZARAR KES EKRANI
+# ==============================================
 
+st.subheader(
+    "🧭 Trend ve İşlem Bölgeleri"
+)
+
+t1, t2, t3 = st.columns(3)
+
+t1.metric(
+    "Trend Durumu",
+    sonuc["Trend Durumu"]
+)
+
+t2.metric(
+    "Hedef 1",
+    f"{sonuc['Hedef 1']:.2f} TL"
+)
+
+t3.metric(
+    "Hedef 2",
+    f"{sonuc['Hedef 2']:.2f} TL"
+)
+
+
+r1, r2 = st.columns(2)
+
+r1.metric(
+    "🛡️ Teknik Zarar Kes",
+    f"{sonuc['Zarar Kes']:.2f} TL"
+)
+
+r2.write(
+    sonuc["Isınma"]
+)
             st.subheader(
                 "📈 Fiyat ve Trend"
             )
