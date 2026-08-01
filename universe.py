@@ -1,6 +1,3 @@
-# Bu liste geniş bir başlangıç evrenidir; BIST kotasyonları zamanla değişebilir.
-# Uygulamadaki CSV yükleme alanıyla daha güncel veya özel bir liste kullanılabilir.
-
 BIST_SYMBOLS = sorted(set("""
 A1CAP ACSEL ADEL ADESE ADGYO AEFES AFYON AGESA AGHOL AGROT AHGAZ AKBNK
 AKCNS AKENR AKFGY AKFYE AKGRT AKMGY AKSA AKSEN AKSGY AKSUE AKYHO ALARK

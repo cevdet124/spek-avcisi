@@ -1,12 +1,24 @@
-# Spek Avcısı V21 Pro — Walk-Forward
+# Spek Avcısı V21 Daily Pro
 
-V20 dinamik backtest motoruna walk-forward optimizasyonu eklenmiştir.
+Günlük kullanım için sadeleştirilmiş, hızlı ve açıklanabilir sürüm.
 
-## Neden walk-forward?
-Ayarlar geçmiş verinin ilk bölümünde seçilir ve daha sonra hiç görülmemiş son bölümde test edilir. Böylece yalnızca geçmişe aşırı uyum sağlayan ayarların fark edilmesi kolaylaşır.
+## Yeni özellikler
+- AI Analist yorumları
+- Bugünün En İyi 10 Fırsatı
+- Hızlı tarama
+- Kalite sıralaması
+- Neden seçildi / riskler
+- Modüler yapı
 
-## Yeni dosya
-- `optimizer.py`: parametre taraması, risk-ayarlı seçim ve görülmemiş dönem doğrulaması
+## Dosyalar
+- app.py
+- config.py
+- data.py
+- indicators.py
+- engine.py
+- scanner.py
+- universe.py
+- requirements.txt
 
-## Dikkat
-Tek bir hissede veya tek bir dönemde iyi sonuç yeterli değildir. Farklı hisseler, piyasa rejimleri ve dönemler üzerinde tutarlılık aranmalıdır. Geçmiş performans geleceği garanti etmez.
+## Uyarı
+Bu uygulama yatırım tavsiyesi değildir.
