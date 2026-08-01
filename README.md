@@ -1,15 +1,12 @@
-# Spek Avcısı V20 Pro
+# Spek Avcısı V21 Pro — Walk-Forward
 
-V19 analiz motoruna profesyonel dinamik çıkış kuralları eklenmiştir.
+V20 dinamik backtest motoruna walk-forward optimizasyonu eklenmiştir.
 
-## Dinamik backtest
-- ATR tabanlı zarar kes
-- İlk hedefte kısmi kâr al
-- İkinci hedef
-- Hareketli stop
-- Trend veya risk bozulduğunda çıkış
-- İşlem maliyeti
+## Neden walk-forward?
+Ayarlar geçmiş verinin ilk bölümünde seçilir ve daha sonra hiç görülmemiş son bölümde test edilir. Böylece yalnızca geçmişe aşırı uyum sağlayan ayarların fark edilmesi kolaylaşır.
 
-## Önemli
-Geçmiş performans gelecekteki sonucu garanti etmez. Backtest; veri kalitesi,
-likidite, fiyat kayması ve seçilen ayarlara duyarlıdır.
+## Yeni dosya
+- `optimizer.py`: parametre taraması, risk-ayarlı seçim ve görülmemiş dönem doğrulaması
+
+## Dikkat
+Tek bir hissede veya tek bir dönemde iyi sonuç yeterli değildir. Farklı hisseler, piyasa rejimleri ve dönemler üzerinde tutarlılık aranmalıdır. Geçmiş performans geleceği garanti etmez.

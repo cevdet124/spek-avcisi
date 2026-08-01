@@ -4,15 +4,16 @@ import yfinance as yf
 
 from engine import analyze_frame, download_one, scan_universe
 from backtest import BacktestConfig, run_backtest
+from optimizer import walk_forward_optimize
 from universe import BIST_SYMBOLS
 
 st.set_page_config(
-    page_title="Spek Avcısı V20 Pro",
+    page_title="Spek Avcısı V21 Pro",
     page_icon="🦅",
     layout="wide",
 )
 
-st.title("🦅 Spek Avcısı V20 Pro")
+st.title("🦅 Spek Avcısı V21 Pro")
 st.caption(
     "Çok katmanlı teknik karar destek sistemi: trend, kurumsal para, "
     "hareket hazırlığı, sahte hareket, risk ve işlem kalitesi."
@@ -52,10 +53,11 @@ def market_filter():
 market_score, market_text = market_filter()
 st.info(f"Piyasa filtresi: {market_text}")
 
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🔎 Tek Hisse",
     "📡 BIST Tarayıcı",
     "🧪 Backtest",
+    "🧬 Walk-Forward",
     "ℹ️ Model ve Sınırlar",
 ])
 
@@ -202,7 +204,7 @@ with tab2:
             st.download_button(
                 "📥 TARAMA SONUÇLARINI İNDİR",
                 data=csv,
-                file_name="spek_avcisi_v18_pro.csv",
+                file_name="spek_avcisi_v21_pro.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
@@ -309,7 +311,71 @@ with tab3:
             )
 
 with tab4:
-    st.subheader("V20 Pro ne yapar?")
+    st.subheader("🧬 Walk-Forward Optimizasyonu")
+    st.caption(
+        "Ayarlar geçmiş verinin ilk bölümünde seçilir; hiç görülmeyen son bölümde ayrıca test edilir. "
+        "Bu yöntem, tek dönem backtestine göre aşırı uyum riskini azaltır."
+    )
+
+    wf_symbol = st.text_input(
+        "Walk-forward hissesi", value="THYAO", key="wf_symbol"
+    ).strip().upper()
+    train_ratio = st.slider("Eğitim verisi oranı", 0.60, 0.80, 0.70, 0.05)
+    max_combinations = st.selectbox("Denecek ayar kombinasyonu", [40, 80, 120], index=1)
+
+    if st.button("🧬 WALK-FORWARD TESTİNİ BAŞLAT", use_container_width=True):
+        with st.spinner("Ayarlar eğitim döneminde aranıyor ve test döneminde doğrulanıyor..."):
+            wf_frame = cached_one(wf_symbol)
+            wf = walk_forward_optimize(
+                wf_frame,
+                market_score=market_score,
+                train_ratio=float(train_ratio),
+                max_combinations=int(max_combinations),
+            ) if wf_frame is not None else {
+                "leaderboard": pd.DataFrame(), "best_config": None, "train": {}, "test": {}
+            }
+
+        if wf["best_config"] is None:
+            st.warning("Yeterli veri veya uygun ayar sonucu bulunamadı.")
+        else:
+            st.success(
+                f"En iyi ayarlar eğitim döneminde seçildi. Eğitim sonu: {wf['train_end']} | "
+                f"Test başlangıcı: {wf['test_start']}"
+            )
+
+            st.subheader("⚙️ Seçilen Ayarlar")
+            st.json(wf["best_config"])
+
+            train_summary = wf["train"].get("summary", {})
+            test_summary = wf["test"].get("summary", {})
+            compare = pd.DataFrame([train_summary, test_summary], index=["Eğitim", "Görülmemiş Test"])
+            st.subheader("📊 Eğitim ve Görülmemiş Test Karşılaştırması")
+            st.dataframe(compare, use_container_width=True)
+
+            if test_summary:
+                degradation = (
+                    float(test_summary.get("Toplam Bileşik Getiri %", 0))
+                    - float(train_summary.get("Toplam Bileşik Getiri %", 0))
+                )
+                if float(test_summary.get("Kâr Faktörü", 0) if test_summary.get("Kâr Faktörü") != "∞" else 10) >= 1.2:
+                    st.success("Görülmemiş test döneminde kâr faktörü 1,2 veya üzerinde.")
+                else:
+                    st.warning("Görülmemiş test döneminde avantaj zayıf; ayarları canlı kullanmadan önce daha fazla doğrulama gerekir.")
+                st.caption(f"Test - eğitim bileşik getiri farkı: %{degradation:.2f}")
+
+            st.subheader("🏆 En İyi Eğitim Ayarları")
+            st.dataframe(wf["leaderboard"].head(15), use_container_width=True, hide_index=True)
+
+            if not wf["test"].get("equity", pd.DataFrame()).empty:
+                st.subheader("📈 Görülmemiş Test Getiri Eğrisi")
+                st.line_chart(wf["test"]["equity"])
+
+            if not wf["test"].get("trades", pd.DataFrame()).empty:
+                st.subheader("📋 Görülmemiş Test İşlemleri")
+                st.dataframe(wf["test"]["trades"], use_container_width=True, hide_index=True)
+
+with tab5:
+    st.subheader("V21 Pro ne yapar?")
     st.write(
         "Model; günlük ve haftalık trend, RSI, MACD, CMF, MFI, OBV, A/D Line, "
         "hacim devamlılığı, ATR, likidite, sıkışma, kırılım ve BIST piyasa "
