@@ -619,7 +619,8 @@ def analiz_et(veri):
 
         "MA20": ma20,
 
-        "MA50": ma50
+        "MA50": ma50,
+        
         "Trend Durumu": trend_durumu,
 
         "Hedef 1": hedef_1,
