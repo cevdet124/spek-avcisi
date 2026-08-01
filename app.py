@@ -526,6 +526,58 @@ def analiz_et(veri):
             "Güçlü bir teknik uyum oluşmadı"
         )
 
+    # ==============================================
+    # V14 TREND - HEDEF - RİSK
+    # ==============================================
+
+    if (
+        son_fiyat > son_ma20
+        and son_ma20 > son_ma50
+    ):
+        trend_durumu = "🟢 Güçlü Yükseliş"
+
+    elif son_fiyat > son_ma20:
+        trend_durumu = "🟩 Yükseliş"
+
+    elif son_fiyat > son_ma50:
+        trend_durumu = "🟡 Kararsız / Yatay"
+
+    else:
+        trend_durumu = "🔴 Düşüş"
+
+
+    hedef_1 = direnc
+
+    hedef_2 = (
+        direnc
+        +
+        (
+            direnc - destek
+        )
+    )
+
+
+    zarar_kes = (
+        destek * 0.98
+    )
+
+
+    if son_rsi >= 75:
+        isinma = (
+            "🔥 Aşırı alım: "
+            "Kısa vadeli düzeltme riski yüksek"
+        )
+
+    elif son_rsi >= 68:
+        isinma = (
+            "⚠️ Isınma başladı: "
+            "Kâr satışı riski izlenmeli"
+        )
+
+    else:
+        isinma = (
+            "✅ Aşırı ısınma görünmüyor"
+        )
 
     return {
 
@@ -568,6 +620,15 @@ def analiz_et(veri):
         "MA20": ma20,
 
         "MA50": ma50
+        "Trend Durumu": trend_durumu,
+
+        "Hedef 1": hedef_1,
+
+        "Hedef 2": hedef_2,
+
+        "Zarar Kes": zarar_kes,
+
+        "Isınma": isinma,
 
     }
 
