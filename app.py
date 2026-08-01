@@ -629,7 +629,6 @@ def analiz_et(veri):
         "Zarar Kes": zarar_kes,
 
         "Isınma": isinma,
-
     }
 
 
