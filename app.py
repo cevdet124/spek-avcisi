@@ -5,128 +5,90 @@ import numpy as np
 import time
 
 # ==================================================
-# SPEK AVCISI V16 - GENİŞ BIST TARAMA
+# SPEK AVCISI V17
+# GELİŞMİŞ BIST RADARI
 # ==================================================
 
 st.set_page_config(
-    page_title="Spek Avcısı V16",
+    page_title="Spek Avcısı V17",
     page_icon="🦅",
     layout="wide"
 )
 
-st.title("🦅 SPEK AVCISI V16")
+st.title("🦅 SPEK AVCISI V17")
 st.caption(
-    "Geniş BIST tarama | Trend | Hacim | Para akışı | "
-    "Toplama-dağıtım olasılığı"
+    "Geniş BIST tarama | Akıllı risk filtresi | "
+    "Hacim devamlılığı | Haftalık trend | "
+    "Yeni güçlenen hisseler"
 )
 
 # ==================================================
-# GENİŞ HİSSE LİSTESİ
+# BIST HİSSE LİSTESİ
 # ==================================================
 
 BIST_HISSELERI = [
     "A1CAP", "ACSEL", "ADEL", "ADESE", "ADGYO",
     "AEFES", "AFYON", "AGESA", "AGHOL", "AGROT",
-    "AGYO", "AHGAZ", "AKBNK", "AKCNS", "AKENR",
-    "AKFGY", "AKFYE", "AKGRT", "AKMGY", "AKSA",
-    "AKSEN", "AKSGY", "AKSUE", "AKYHO", "ALARK",
-    "ALBRK", "ALCAR", "ALCTL", "ALFAS", "ALGYO",
-    "ALKA", "ALKIM", "ALMAD", "ALTNY", "ANSGR",
-    "ARCLK", "ARDYZ", "ARENA", "ARMGD", "ARSAN",
-    "ARTMS", "ARZUM", "ASELS", "ASGYO", "ASTOR",
+    "AHGAZ", "AKBNK", "AKCNS", "AKENR", "AKFGY",
+    "AKFYE", "AKGRT", "AKMGY", "AKSA", "AKSEN",
+    "AKSGY", "AKSUE", "AKYHO", "ALARK", "ALBRK",
+    "ALCAR", "ALCTL", "ALFAS", "ALGYO", "ALKA",
+    "ALKIM", "ALMAD", "ALTNY", "ANSGR", "ARCLK",
+    "ARDYZ", "ARENA", "ARSAN", "ASELS", "ASTOR",
     "ASUZU", "ATAGY", "ATAKP", "ATATP", "AVGYO",
     "AVHOL", "AVOD", "AVPGY", "AYCES", "AYDEM",
     "AYEN", "AYGAZ", "BAGFS", "BAKAB", "BALAT",
     "BASCM", "BAYRK", "BEGYO", "BERA", "BESLR",
-    "BETA", "BFREN", "BIENY", "BIGCH", "BIGEN",
-    "BIMAS", "BINHO", "BIOEN", "BIZIM", "BJKAS",
-    "BLCYT", "BMSCH", "BMSTL", "BNTAS", "BOSSA",
-    "BRISA", "BRKSN", "BRLSM", "BRMEN", "BRSAN",
-    "BRYAT", "BSOKE", "BTCIM", "BUCIM", "BURCE",
-    "BVSAN", "CANTE", "CCOLA", "CELHA", "CEMAS",
-    "CEMTS", "CEOEM", "CIMSA", "CLEBI", "CMBTN",
-    "CMENT", "CONSE", "COSMO", "CRDFA", "CRFSA",
-    "CUSAN", "CVKMD", "CWENE", "DAGHL", "DAGI",
-    "DAPGM", "DARDL", "DENGE", "DERHL", "DERIM",
-    "DESA", "DESPC", "DEVA", "DGATE", "DGGYO",
-    "DGNMO", "DIRIT", "DITAS", "DMRGD", "DMSAS",
-    "DNISI", "DOAS", "DOBUR", "DOCO", "DOFER",
-    "DOGUB", "DOHOL", "DOKTA", "DURDO", "DYOBY",
-    "DZGYO", "EBEBK", "ECILC", "ECZYT", "EDATA",
-    "EDIP", "EGEEN", "EGEPO", "EGGUB", "EGPRO",
-    "EGSER", "EKGYO", "EKOS", "EKSUN", "ELITE",
-    "EMKEL", "EMNIS", "ENDAE", "ENERY", "ENJSA",
-    "ENKAI", "EPLAS", "ERBOS", "EREGL", "ERSU",
-    "ESCAR", "ESCOM", "ESEN", "ETILR", "ETYAT",
-    "EUHOL", "EUKYO", "EUPWR", "EUREN", "EUYO",
-    "EYGYO", "FADE", "FENER", "FLAP", "FMIZP",
-    "FONET", "FORTE", "FRIGO", "FROTO", "FZLGY",
-    "GARAN", "GARFA", "GEDIK", "GEDZA", "GENIL",
-    "GENTS", "GEREL", "GESAN", "GIPTA", "GLBMD",
-    "GLCVY", "GLRYH", "GLYHO", "GMTAS", "GOKNR",
-    "GOLTS", "GOODY", "GOZDE", "GRNYO", "GRSEL",
-    "GRTHO", "GSDDE", "GSDHO", "GSRAY", "GUBRF",
-    "GWIND", "GZNMI", "HALKB", "HATEK", "HATSN",
-    "HEDEF", "HEKTS", "HKTM", "HLGYO", "HOROZ",
-    "HRKET", "HTTBT", "HUBVC", "HUNER", "HURGZ",
-    "ICBCT", "ICUGS", "IDGYO", "IEYHO", "IHAAS",
-    "IHEVA", "IHGZT", "IHLAS", "IHLGM", "IHYAY",
-    "IMASM", "INDES", "INFO", "INTEM", "INVEO",
-    "INVES", "IPEKE", "ISATR", "ISBTR", "ISCTR",
-    "ISDMR", "ISFIN", "ISGYO", "ISGSY", "ISGYO",
-    "ISMEN", "ISSEN", "ISYAT", "IZENR", "IZFAS",
-    "IZMDC", "JANTS", "KAPLM", "KAREL", "KARSN",
-    "KARTN", "KARYE", "KATMR", "KAYSE", "KBORU",
-    "KCAER", "KCHOL", "KENT", "KERVT", "KFEIN",
-    "KGYO", "KIMMR", "KLGYO", "KLKIM", "KLMSN",
-    "KLRHO", "KLSER", "KLSYN", "KMPUR", "KONKA",
-    "KONTR", "KONYA", "KORDS", "KOTON", "KOZAA",
-    "KOZAL", "KRDMA", "KRDMB", "KRDMD", "KRGYO",
-    "KRONT", "KRPLS", "KRSTL", "KRTEK", "KRVGD",
-    "KSTUR", "KTLEV", "KTSKR", "KUTPO", "KUYAS",
-    "KZBGY", "KZGYO", "LIDER", "LILAK", "LINK",
-    "LKMNH", "LMKDC", "LOGO", "LRSHO", "LUKSK",
-    "LYDHO", "MAALT", "MAGEN", "MAKIM", "MAKTK",
-    "MANAS", "MARBL", "MARKA", "MARTI", "MAVI",
-    "MEDTR", "MEGMT", "MEKAG", "MERCN", "MERIT",
-    "MERKO", "METRO", "METUR", "MGROS", "MHRGY",
-    "MIATK", "MMCAS", "MNDRS", "MOBTL", "MOGAN",
-    "MPARK", "MRGYO", "MRSHL", "MSGYO", "MTRKS",
-    "MTRYO", "MZHLD", "NATEN", "NETAS", "NIBAS",
-    "NTHOL", "NUGYO", "NUHCM", "OBASE", "ODAS",
-    "ODINE", "OFSYM", "ONCSM", "ONRYT", "ORCAY",
-    "ORGE", "ORMA", "OSMEN", "OSTIM", "OTKAR",
-    "OTTO", "OYAKC", "OYYAT", "OZATD", "OZGYO",
-    "OZKGY", "OZSUB", "PAGYO", "PAMEL", "PAPIL",
-    "PARSN", "PASEU", "PATEK", "PCILT", "PEGYO",
-    "PEKGY", "PENGD", "PENTA", "PETKM", "PETUN",
-    "PGSUS", "PINSU", "PKART", "PKENT", "PLTUR",
-    "PNLSN", "PNSUT", "POLHO", "POLTK", "PRDGS",
-    "PRKAB", "PRKME", "PRZMA", "PSDTC", "PSGYO",
-    "QNBFB", "QNBFL", "QUAGR", "RALYH", "RAYSG",
-    "REEDR", "RGYAS", "RNPOL", "RODRG", "ROYAL",
-    "RTALB", "RUBNS", "RYGYO", "RYSAS", "SAFKR",
-    "SAHOL", "SAMAT", "SANEL", "SANFM", "SANKO",
-    "SARKY", "SASA", "SAYAS", "SDTTR", "SEGMN",
-    "SEGYO", "SEKFK", "SEKUR", "SELEC", "SELGD",
-    "SELVA", "SEYKM", "SILVR", "SISE", "SKBNK",
-    "SKTAS", "SKYLP", "SKYMD", "SMART", "SMRTG",
-    "SNGYO", "SNICA", "SNPAM", "SODSN", "SOKE",
-    "SOKM", "SONME", "SRVGY", "SUNTK", "SURGY",
-    "SUWEN", "TABGD", "TATEN", "TATGD", "TAVHL",
-    "TBORG", "TCELL", "TDGYO", "TEKTU", "TERA",
-    "TEZOL", "THYAO", "TKFEN", "TKNSA", "TLMAN",
-    "TMPOL", "TMSN", "TOASO", "TRCAS", "TRGYO",
-    "TRILC", "TSGYO", "TSKB", "TSPOR", "TTKOM",
-    "TTRAK", "TUCLK", "TUKAS", "TUPRS", "TUREX",
-    "TURGG", "TURSG", "UFUK", "ULAS", "ULKER",
-    "ULUFA", "ULUSE", "ULUUN", "UNLU", "USAK",
-    "VAKBN", "VAKFN", "VAKKO", "VANGD", "VBTYZ",
-    "VERTU", "VERUS", "VESBE", "VESTL", "VKFYO",
-    "VKGYO", "VKING", "VRGYO", "VSNMD", "YAPRK",
-    "YATAS", "YAYLA", "YBTAS", "YEOTK", "YESIL",
-    "YGGYO", "YGYO", "YIGIT", "YKBNK", "YKSLN",
-    "YONGA", "YUNSA", "YYAPI", "ZEDUR", "ZOREN"
+    "BFREN", "BIENY", "BIGCH", "BIMAS", "BINHO",
+    "BIOEN", "BIZIM", "BJKAS", "BLCYT", "BMSCH",
+    "BMSTL", "BNTAS", "BOSSA", "BRISA", "BRKSN",
+    "BRLSM", "BRMEN", "BRSAN", "BRYAT", "BSOKE",
+    "BTCIM", "BUCIM", "BURCE", "BVSAN", "CANTE",
+    "CCOLA", "CELHA", "CEMAS", "CEMTS", "CEOEM",
+    "CIMSA", "CLEBI", "CMBTN", "CMENT", "CONSE",
+    "CRFSA", "CVKMD", "CWENE", "DAGHL", "DAGI",
+    "DAPGM", "DARDL", "DESA", "DESPC", "DEVA",
+    "DGATE", "DGNMO", "DOAS", "DOHOL", "DYOBY",
+    "EBEBK", "ECILC", "ECZYT", "EDATA", "EDIP",
+    "EGEEN", "EGSER", "EKGYO", "EKOS", "EKSUN",
+    "ELITE", "EMKEL", "ENERY", "ENJSA", "ENKAI",
+    "EREGL", "ESCOM", "ESEN", "EUPWR", "EUREN",
+    "FENER", "FONET", "FORTE", "FROTO", "GARAN",
+    "GEDIK", "GESAN", "GLYHO", "GOKNR", "GOODY",
+    "GOZDE", "GRSEL", "GSDHO", "GSRAY", "GUBRF",
+    "GWIND", "HALKB", "HATSN", "HEDEF", "HEKTS",
+    "HKTM", "HLGYO", "HOROZ", "HRKET", "HTTBT",
+    "HUBVC", "ICBCT", "IDGYO", "IEYHO", "IHAAS",
+    "IHLAS", "IHLGM", "IMASM", "INDES", "INFO",
+    "INVEO", "INVES", "IPEKE", "ISCTR", "ISDMR",
+    "ISFIN", "ISGYO", "ISMEN", "ISSEN", "IZENR",
+    "IZMDC", "JANTS", "KAREL", "KARSN", "KATMR",
+    "KAYSE", "KBORU", "KCAER", "KCHOL", "KERVT",
+    "KFEIN", "KIMMR", "KLGYO", "KLKIM", "KLSER",
+    "KMPUR", "KONTR", "KONYA", "KORDS", "KOTON",
+    "KOZAA", "KOZAL", "KRDMD", "KRONT", "KRVGD",
+    "KUTPO", "KUYAS", "LIDER", "LILAK", "LKMNH",
+    "LOGO", "MAVI", "MEDTR", "MEGMT", "MERIT",
+    "METRO", "MGROS", "MIATK", "MOBTL", "MPARK",
+    "MTRKS", "NATEN", "NETAS", "NTHOL", "NUHCM",
+    "ODAS", "ODINE", "OFSYM", "ONCSM", "ORCAY",
+    "ORGE", "OTKAR", "OYAKC", "OZGYO", "OZKGY",
+    "PASEU", "PATEK", "PCILT", "PEGYO", "PEKGY",
+    "PENTA", "PETKM", "PGSUS", "PINSU", "PNLSN",
+    "PNSUT", "POLHO", "PRKME", "PSGYO", "RALYH",
+    "RAYSG", "REEDR", "RGYAS", "RODRG", "RTALB",
+    "RUBNS", "RYGYO", "RYSAS", "SAHOL", "SASA",
+    "SAYAS", "SDTTR", "SEKUR", "SELEC", "SELVA",
+    "SISE", "SKBNK", "SKTAS", "SMART", "SMRTG",
+    "SNGYO", "SOKE", "SOKM", "SRVGY", "SUWEN",
+    "TABGD", "TATGD", "TAVHL", "TCELL", "TEKTU",
+    "THYAO", "TKFEN", "TKNSA", "TMSN", "TOASO",
+    "TRCAS", "TRGYO", "TRILC", "TSKB", "TSPOR",
+    "TTKOM", "TTRAK", "TUKAS", "TUPRS", "TUREX",
+    "TURSG", "ULKER", "ULUUN", "VAKBN", "VAKFN",
+    "VBTYZ", "VERUS", "VESBE", "VESTL", "YATAS",
+    "YEOTK", "YIGIT", "YKBNK", "YKSLN", "YUNSA",
+    "ZOREN", "UFUK", "AKSUE", "AVHOL", "CRFSA"
 ]
 
 BIST_HISSELERI = sorted(
@@ -134,41 +96,205 @@ BIST_HISSELERI = sorted(
 )
 
 # ==================================================
-# VERİ İNDİR
+# YARDIMCI FONKSİYONLAR
 # ==================================================
 
-@st.cache_data(ttl=900)
-def veri_indir(hisseler):
+def tek_seviye(veri):
 
-    semboller = [
-        hisse + ".IS"
-        for hisse in hisseler
-    ]
+    if isinstance(
+        veri.columns,
+        pd.MultiIndex
+    ):
 
-    veri = yf.download(
-        tickers=semboller,
-        period="1y",
-        interval="1d",
-        group_by="ticker",
-        auto_adjust=True,
-        progress=False,
-        threads=True
-    )
+        veri.columns = (
+            veri.columns
+            .get_level_values(0)
+        )
 
     return veri
 
 
-# ==================================================
-# TEK HİSSE ANALİZİ
-# ==================================================
+def hesapla_rsi(close):
 
-def hisse_analiz(veri):
+    fark = close.diff()
 
-    veri = veri.dropna(
-        subset=["Close"]
+    yukari = (
+        fark.clip(lower=0)
     )
 
-    if len(veri) < 60:
+    asagi = (
+        -fark.clip(upper=0)
+    )
+
+    ort_yukari = (
+        yukari
+        .ewm(
+            alpha=1 / 14,
+            adjust=False
+        )
+        .mean()
+    )
+
+    ort_asagi = (
+        asagi
+        .ewm(
+            alpha=1 / 14,
+            adjust=False
+        )
+        .mean()
+    )
+
+    rs = (
+        ort_yukari
+        /
+        ort_asagi.replace(
+            0,
+            np.nan
+        )
+    )
+
+    return (
+        100
+        -
+        100 / (1 + rs)
+    )
+
+
+def hesapla_atr(
+    high,
+    low,
+    close
+):
+
+    onceki = close.shift(1)
+
+    tr = pd.concat(
+
+        [
+            high - low,
+
+            (
+                high - onceki
+            ).abs(),
+
+            (
+                low - onceki
+            ).abs()
+
+        ],
+
+        axis=1
+
+    ).max(axis=1)
+
+    return (
+        tr
+        .rolling(14)
+        .mean()
+    )
+
+
+def piyasa_durumu():
+
+    try:
+
+        veri = yf.download(
+
+            "XU100.IS",
+
+            period="1y",
+
+            interval="1d",
+
+            auto_adjust=True,
+
+            progress=False
+
+        )
+
+        veri = tek_seviye(
+            veri
+        )
+
+        if len(veri) < 60:
+
+            return (
+                "🟡 Belirsiz",
+                50
+            )
+
+        close = veri["Close"]
+
+        ma20 = (
+            close
+            .rolling(20)
+            .mean()
+            .iloc[-1]
+        )
+
+        ma50 = (
+            close
+            .rolling(50)
+            .mean()
+            .iloc[-1]
+        )
+
+        fiyat = (
+            close.iloc[-1]
+        )
+
+        if (
+            fiyat > ma20
+            and ma20 > ma50
+        ):
+
+            return (
+                "🟢 BIST Trend Pozitif",
+                100
+            )
+
+        elif fiyat > ma50:
+
+            return (
+                "🟡 BIST Kararsız",
+                70
+            )
+
+        else:
+
+            return (
+                "🔴 BIST Trend Zayıf",
+                40
+            )
+
+    except Exception:
+
+        return (
+            "🟡 Piyasa verisi alınamadı",
+            60
+        )
+
+
+# ==================================================
+# GELİŞMİŞ HİSSE ANALİZİ
+# ==================================================
+
+def hisse_analiz(
+    veri,
+    piyasa_puani=60
+):
+
+    veri = veri.dropna(
+        subset=[
+            "Close",
+            "High",
+            "Low",
+            "Volume"
+        ]
+    )
+
+    if len(veri) < 100:
+
         return None
 
     close = veri["Close"]
@@ -185,13 +311,37 @@ def hisse_analiz(veri):
     )
 
     gunluk_degisim = (
-        (fiyat - onceki_fiyat)
-        / onceki_fiyat
+
+        (
+            fiyat
+            -
+            onceki_fiyat
+        )
+
+        /
+        onceki_fiyat
+
         * 100
+
     )
 
-    ma20 = close.rolling(20).mean()
-    ma50 = close.rolling(50).mean()
+    ma20 = (
+        close
+        .rolling(20)
+        .mean()
+    )
+
+    ma50 = (
+        close
+        .rolling(50)
+        .mean()
+    )
+
+    ma100 = (
+        close
+        .rolling(100)
+        .mean()
+    )
 
     son_ma20 = float(
         ma20.iloc[-1]
@@ -201,68 +351,82 @@ def hisse_analiz(veri):
         ma50.iloc[-1]
     )
 
-    fark = close.diff()
-
-    yukselis = fark.clip(
-        lower=0
+    son_ma100 = float(
+        ma100.iloc[-1]
     )
 
-    dusus = -fark.clip(
-        upper=0
-    )
-
-    ort_yukselis = (
-        yukselis
-        .rolling(14)
-        .mean()
-    )
-
-    ort_dusus = (
-        dusus
-        .rolling(14)
-        .mean()
-    )
-
-    rs = (
-        ort_yukselis
-        / ort_dusus.replace(
-            0,
-            np.nan
-        )
-    )
-
-    rsi = (
-        100
-        - 100 / (1 + rs)
+    rsi = hesapla_rsi(
+        close
     )
 
     son_rsi = float(
         rsi.iloc[-1]
     )
 
-    ort_hacim = float(
+    ort_hacim20 = float(
+
         volume
         .rolling(20)
         .mean()
         .iloc[-1]
+
     )
 
     son_hacim = float(
         volume.iloc[-1]
     )
 
-    if ort_hacim > 0:
+    hacim_orani = (
 
-        hacim_orani = (
-            son_hacim
-            / ort_hacim
-        )
+        son_hacim
+        /
+        ort_hacim20
 
-    else:
+        if ort_hacim20 > 0
 
-        hacim_orani = 1
+        else 0
 
-    fiyat_araligi = (
+    )
+
+    son5_hacim = float(
+
+        volume
+        .tail(5)
+        .mean()
+
+    )
+
+    onceki5_hacim = float(
+
+        volume
+        .iloc[-10:-5]
+        .mean()
+
+    )
+
+    hacim_devam = (
+
+        son5_hacim
+        /
+        onceki5_hacim
+
+        if onceki5_hacim > 0
+
+        else 1
+
+    )
+
+    # İşlem değeri
+
+    islem_degeri = (
+        fiyat
+        *
+        son_hacim
+    )
+
+    # CMF
+
+    aralik = (
         high - low
     ).replace(
         0,
@@ -277,22 +441,31 @@ def hisse_analiz(veri):
             (high - close)
         )
 
-        / fiyat_araligi
+        /
+        aralik
 
     )
 
     para_carpani = (
+
         para_carpani
+
         .replace(
-            [np.inf, -np.inf],
+            [
+                np.inf,
+                -np.inf
+            ],
             0
         )
+
         .fillna(0)
+
     )
 
     para_hacmi = (
         para_carpani
-        * volume
+        *
+        volume
     )
 
     cmf = (
@@ -313,30 +486,144 @@ def hisse_analiz(veri):
         cmf.iloc[-1]
     )
 
-    # Trend
+    # ATR
+
+    atr = hesapla_atr(
+        high,
+        low,
+        close
+    )
+
+    atr_yuzde = (
+
+        float(
+            atr.iloc[-1]
+        )
+
+        /
+        fiyat
+
+        * 100
+
+    )
+
+    # Haftalık trend
+
+    haftalik = (
+
+        close
+
+        .resample(
+            "W-FRI"
+        )
+
+        .last()
+
+        .dropna()
+
+    )
+
+    if len(haftalik) >= 20:
+
+        hafta_ma10 = (
+
+            haftalik
+
+            .rolling(10)
+
+            .mean()
+
+            .iloc[-1]
+
+        )
+
+        hafta_ma20 = (
+
+            haftalik
+
+            .rolling(20)
+
+            .mean()
+
+            .iloc[-1]
+
+        )
+
+        if (
+            haftalik.iloc[-1]
+            >
+            hafta_ma10
+            and
+            hafta_ma10
+            >
+            hafta_ma20
+        ):
+
+            haftalik_trend = (
+                "🟢 Uyumlu"
+            )
+
+            haftalik_puan = 100
+
+        elif (
+            haftalik.iloc[-1]
+            >
+            hafta_ma20
+        ):
+
+            haftalik_trend = (
+                "🟡 Kısmen uyumlu"
+            )
+
+            haftalik_puan = 65
+
+        else:
+
+            haftalik_trend = (
+                "🔴 Uyumsuz"
+            )
+
+            haftalik_puan = 25
+
+    else:
+
+        haftalik_trend = (
+            "🟡 Veri az"
+        )
+
+        haftalik_puan = 50
+
+    # Günlük trend
 
     if (
         fiyat > son_ma20
-        and son_ma20 > son_ma50
+        and
+        son_ma20 > son_ma50
+        and
+        son_ma50 > son_ma100
     ):
 
-        trend = 100
+        trend_puani = 100
 
         trend_yazi = (
             "🟢 Güçlü yükseliş"
         )
 
-    elif fiyat > son_ma20:
+    elif (
+        fiyat > son_ma20
+        and
+        son_ma20 > son_ma50
+    ):
 
-        trend = 70
+        trend_puani = 80
 
         trend_yazi = (
-            "🟩 Yükseliş"
+            "🟢 Yükseliş"
         )
 
     elif fiyat > son_ma50:
 
-        trend = 45
+        trend_puani = 55
 
         trend_yazi = (
             "🟡 Kararsız"
@@ -344,15 +631,19 @@ def hisse_analiz(veri):
 
     else:
 
-        trend = 20
+        trend_puani = 20
 
         trend_yazi = (
             "🔴 Düşüş"
         )
 
-    # Hacim
+    # Hacim puanı
 
-    if hacim_orani >= 2:
+    if (
+        hacim_orani >= 2
+        and
+        hacim_devam >= 1.15
+    ):
 
         hacim_puani = 100
 
@@ -360,15 +651,15 @@ def hisse_analiz(veri):
 
         hacim_puani = 80
 
-    elif hacim_orani >= 1:
+    elif hacim_orani >= 1.1:
 
-        hacim_puani = 55
+        hacim_puani = 60
 
     else:
 
         hacim_puani = 25
 
-    # Para
+    # Para akışı
 
     if son_cmf >= 0.20:
 
@@ -390,174 +681,359 @@ def hisse_analiz(veri):
 
         para_puani = 10
 
-    # Momentum
+    # RSI momentumu
 
-    if 50 <= son_rsi <= 68:
+    if 50 <= son_rsi <= 65:
 
-        momentum = 90
+        rsi_puani = 100
 
     elif 45 <= son_rsi < 50:
 
-        momentum = 60
+        rsi_puani = 65
 
-    elif son_rsi > 68:
+    elif 65 < son_rsi <= 70:
 
-        momentum = 50
+        rsi_puani = 75
+
+    elif 70 < son_rsi <= 75:
+
+        rsi_puani = 45
+
+    elif son_rsi > 75:
+
+        rsi_puani = 15
 
     else:
 
-        momentum = 25
+        rsi_puani = 25
 
-    # Erken hareket
+    # Dirence yakınlık
 
-    son_20_yuksek = float(
+    direnç = float(
         high.tail(20).max()
     )
 
-    son_20_dusuk = float(
+    destek = float(
         low.tail(20).min()
     )
 
-    bant_genisligi = (
-        (son_20_yuksek - son_20_dusuk)
-        / fiyat
+    dirence_uzaklik = (
+
+        (
+            direnç
+            -
+            fiyat
+        )
+
+        /
+        fiyat
+
         * 100
+
     )
 
-    erken_hareket = 0
+    if dirence_uzaklik <= 1:
 
-    if hacim_orani >= 1.3:
+        kovalama = 100
 
-        erken_hareket += 35
+    elif dirence_uzaklik <= 3:
 
-    if 48 <= son_rsi <= 62:
+        kovalama = 70
 
-        erken_hareket += 25
+    elif dirence_uzaklik <= 6:
 
-    if fiyat > son_ma20:
+        kovalama = 35
 
-        erken_hareket += 20
+    else:
 
-    if bant_genisligi <= 15:
+        kovalama = 10
 
-        erken_hareket += 20
+    # Likidite riski
 
-    # Risk
+    if islem_degeri >= 100_000_000:
 
-    risk = 0
+        likidite_riski = 0
 
-    if son_rsi >= 75:
+    elif islem_degeri >= 30_000_000:
 
-        risk += 40
+        likidite_riski = 15
 
-    if fiyat < son_ma20:
+    elif islem_degeri >= 10_000_000:
 
-        risk += 25
+        likidite_riski = 35
 
-    if son_cmf < 0:
+    else:
 
-        risk += 20
+        likidite_riski = 65
 
-    if hacim_orani < 0.70:
+    # Oynaklık riski
 
-        risk += 15
+    if atr_yuzde >= 8:
 
-    risk = min(
-        risk,
+        oynaklik_riski = 80
+
+    elif atr_yuzde >= 5:
+
+        oynaklik_riski = 55
+
+    elif atr_yuzde >= 3:
+
+        oynaklik_riski = 30
+
+    else:
+
+        oynaklik_riski = 10
+
+    # RSI riski
+
+    if son_rsi >= 85:
+
+        rsi_riski = 100
+
+    elif son_rsi >= 75:
+
+        rsi_riski = 70
+
+    elif son_rsi >= 70:
+
+        rsi_riski = 40
+
+    else:
+
+        rsi_riski = 10
+
+    # Trend riski
+
+    trend_riski = (
         100
+        -
+        trend_puani
+    )
+
+    # Toplam risk
+
+    risk = round(
+
+        likidite_riski
+        * 0.25
+
+        +
+
+        oynaklik_riski
+        * 0.20
+
+        +
+
+        rsi_riski
+        * 0.20
+
+        +
+
+        kovalama
+        * 0.15
+
+        +
+
+        trend_riski
+        * 0.20
+
+    )
+
+    risk = max(
+        1,
+        min(
+            risk,
+            100
+        )
+    )
+
+    # Yeni güçlenme
+
+    eski_rsi = float(
+        rsi.iloc[-5]
+    )
+
+    rsi_degisim = (
+        son_rsi
+        -
+        eski_rsi
+    )
+
+    ma20_5gun_once = float(
+        ma20.iloc[-5]
+    )
+
+    yeni_guclenme = 0
+
+    if rsi_degisim >= 5:
+
+        yeni_guclenme += 30
+
+    if (
+        fiyat > son_ma20
+        and
+        close.iloc[-5]
+        <= ma20_5gun_once
+    ):
+
+        yeni_guclenme += 35
+
+    if hacim_devam >= 1.20:
+
+        yeni_guclenme += 20
+
+    if son_cmf > 0:
+
+        yeni_guclenme += 15
+
+    yeni_guclenme = min(
+        yeni_guclenme,
+        100
+    )
+
+    # Erken hareket
+
+    erken_hareket = round(
+
+        hacim_puani
+        * 0.30
+
+        +
+
+        yeni_guclenme
+        * 0.30
+
+        +
+
+        para_puani
+        * 0.20
+
+        +
+
+        rsi_puani
+        * 0.20
+
     )
 
     # Spek puanı
 
     spek_puani = round(
 
-        trend * 0.25
+        trend_puani
+        * 0.20
 
-        + hacim_puani * 0.20
+        +
 
-        + para_puani * 0.25
+        hacim_puani
+        * 0.17
 
-        + momentum * 0.15
+        +
 
-        + erken_hareket * 0.15
+        para_puani
+        * 0.20
 
-        - risk * 0.10
+        +
+
+        rsi_puani
+        * 0.12
+
+        +
+
+        haftalik_puan
+        * 0.12
+
+        +
+
+        yeni_guclenme
+        * 0.10
+
+        +
+
+        piyasa_puani
+        * 0.09
+
+        -
+
+        risk
+        * 0.20
 
     )
 
-    spek_puani = max(
-        0,
-        min(
-            spek_puani,
-            100
+    # Aşırı RSI cezası
+
+    if son_rsi >= 85:
+
+        spek_puani -= 25
+
+    elif son_rsi >= 75:
+
+        spek_puani -= 12
+
+    spek_puani = int(
+
+        max(
+            0,
+            min(
+                spek_puani,
+                100
+            )
         )
-    )
-
-    # Toplama
-
-    toplama = round(
-
-        para_puani * 0.45
-
-        + hacim_puani * 0.25
-
-        + trend * 0.20
-
-        + momentum * 0.10
 
     )
 
-    if toplama >= 75:
+    # Güven
 
-        toplama_yazi = (
-            "🧲 Yüksek"
+    if (
+        haftalik_puan >= 80
+        and
+        hacim_devam >= 1.10
+        and
+        risk <= 30
+    ):
+
+        guven = (
+            "🟢 Yüksek"
         )
 
-    elif toplama >= 55:
+    elif risk <= 50:
 
-        toplama_yazi = (
+        guven = (
             "🟡 Orta"
         )
 
     else:
 
-        toplama_yazi = (
-            "⚪ Düşük"
+        guven = (
+            "🔴 Düşük"
         )
-
-    # Dağıtım
-
-    dagitim = 0
-
-    if gunluk_degisim > 1:
-        dagitim += 20
-
-    if son_cmf < 0:
-        dagitim += 40
-
-    if son_rsi > 70:
-        dagitim += 20
-
-    if hacim_orani < 1:
-        dagitim += 20
-
-    dagitim = min(
-        dagitim,
-        100
-    )
 
     # Sinyal
 
-    if (
+    if son_rsi >= 85:
+
+        sinyal = (
+            "🔥 AŞIRI ISINMIŞ"
+        )
+
+    elif (
         spek_puani >= 75
-        and risk <= 30
+        and
+        risk <= 30
+        and
+        islem_degeri >= 30_000_000
+        and
+        haftalik_puan >= 65
     ):
 
         sinyal = (
             "🟢 GÜÇLÜ AL"
         )
 
-    elif spek_puani >= 60:
+    elif (
+        spek_puani >= 60
+        and
+        risk <= 50
+    ):
 
         sinyal = (
             "🟩 AL / İZLE"
@@ -575,31 +1051,48 @@ def hisse_analiz(veri):
             "🔴 KAÇIN"
         )
 
-    destek = float(
-        low.tail(20).min()
-    )
+    # Hedefler
 
-    direnc = float(
-        high.tail(20).max()
-    )
-
-    hedef_alt = direnc
+    hedef_alt = direnç
 
     hedef_ust = (
-        direnc
-        + (
-            direnc - destek
+
+        direnç
+
+        +
+
+        (
+            direnç
+            -
+            destek
         )
+
         * 0.50
+
     )
 
     zarar_kes = (
-        destek * 0.98
+
+        max(
+
+            destek * 0.98,
+
+            fiyat
+            -
+            2
+            *
+            float(
+                atr.iloc[-1]
+            )
+
+        )
+
     )
 
     return {
 
-        "Fiyat": fiyat,
+        "Fiyat":
+        fiyat,
 
         "Günlük %":
         gunluk_degisim,
@@ -610,50 +1103,50 @@ def hisse_analiz(veri):
         "Hacim Oranı":
         hacim_orani,
 
+        "Hacim Devam":
+        hacim_devam,
+
+        "İşlem Değeri":
+        islem_degeri,
+
         "CMF":
         son_cmf,
 
         "Trend":
-        trend,
-
-        "Trend Durumu":
         trend_yazi,
 
-        "Para":
-        para_puani,
+        "Haftalık":
+        haftalik_trend,
 
-        "Hacim":
-        hacim_puani,
-
-        "Momentum":
-        momentum,
-
-        "Erken Hareket":
-        erken_hareket,
-
-        "Toplama":
-        toplama,
-
-        "Toplama Durumu":
-        toplama_yazi,
-
-        "Dağıtım":
-        dagitim,
+        "Spek":
+        spek_puani,
 
         "Risk":
         risk,
 
-        "Spek Puanı":
-        spek_puani,
+        "Güven":
+        guven,
 
         "Sinyal":
         sinyal,
+
+        "Yeni Güçlenme":
+        yeni_guclenme,
+
+        "Erken Hareket":
+        erken_hareket,
+
+        "ATR %":
+        atr_yuzde,
+
+        "Kovalama":
+        kovalama,
 
         "Destek":
         destek,
 
         "Direnç":
-        direnc,
+        direnç,
 
         "Hedef Alt":
         hedef_alt,
@@ -668,16 +1161,29 @@ def hisse_analiz(veri):
 
 
 # ==================================================
-# ANA SEKMELER
+# PİYASA DURUMU
+# ==================================================
+
+piyasa_yazi, piyasa_puani = (
+    piyasa_durumu()
+)
+
+st.info(
+    f"Piyasa filtresi: "
+    f"{piyasa_yazi}"
+)
+
+# ==================================================
+# SEKMELER
 # ==================================================
 
 sekme1, sekme2, sekme3 = st.tabs([
 
     "🔎 Tek Hisse",
 
-    "📡 Geniş BIST Tarama",
+    "📡 BIST Tarama",
 
-    "ℹ️ Bilgi"
+    "ℹ️ V17 Bilgi"
 
 ])
 
@@ -689,39 +1195,51 @@ sekme1, sekme2, sekme3 = st.tabs([
 with sekme1:
 
     hisse = st.text_input(
+
         "Hisse kodu",
+
         value="THYAO"
+
     ).upper().strip()
 
     if st.button(
-        "🦅 HİSSEYİ ANALİZ ET",
+
+        "🦅 GELİŞMİŞ ANALİZ",
+
         use_container_width=True
+
     ):
 
         with st.spinner(
-            "Veri alınıyor..."
+
+            "Veriler analiz ediliyor..."
+
         ):
 
-            tek_veri = yf.download(
+            veri = yf.download(
+
                 hisse + ".IS",
-                period="1y",
+
+                period="2y",
+
                 interval="1d",
+
                 auto_adjust=True,
+
                 progress=False
+
             )
 
-        if isinstance(
-            tek_veri.columns,
-            pd.MultiIndex
-        ):
-
-            tek_veri.columns = (
-                tek_veri.columns
-                .get_level_values(0)
-            )
+        veri = tek_seviye(
+            veri
+        )
 
         sonuc = hisse_analiz(
-            tek_veri
+
+            veri,
+
+            piyasa_puani
+
         )
 
         if sonuc is None:
@@ -735,24 +1253,37 @@ with sekme1:
             a, b, c, d = st.columns(4)
 
             a.metric(
+
                 "Son Fiyat",
+
                 f"{sonuc['Fiyat']:.2f} TL",
+
                 f"%{sonuc['Günlük %']:.2f}"
+
             )
 
             b.metric(
-                "Spek İz",
-                f"{sonuc['Spek Puanı']}/100"
+
+                "Spek Puanı",
+
+                f"{sonuc['Spek']}/100"
+
             )
 
             c.metric(
-                "Toplama",
-                f"{sonuc['Toplama']}/100"
+
+                "Risk",
+
+                f"{sonuc['Risk']}/100"
+
             )
 
             d.metric(
-                "Risk",
-                f"{sonuc['Risk']}/100"
+
+                "Güven",
+
+                sonuc["Güven"]
+
             )
 
             st.subheader(
@@ -763,139 +1294,217 @@ with sekme1:
 
             x.write(
                 "Trend: "
-                + sonuc[
-                    "Trend Durumu"
-                ]
+                +
+                sonuc["Trend"]
             )
 
             y.write(
-                "Toplama: "
-                + sonuc[
-                    "Toplama Durumu"
-                ]
+                "Haftalık: "
+                +
+                sonuc["Haftalık"]
             )
 
             z.write(
-                "Erken hareket: "
-                + str(
+                "Yeni güçlenme: "
+                +
+                str(
                     sonuc[
-                        "Erken Hareket"
+                        "Yeni Güçlenme"
                     ]
                 )
-                + "/100"
+                +
+                "/100"
             )
 
             st.subheader(
-                "🎯 İşlem Bölgeleri"
+                "📊 Gelişmiş Göstergeler"
+            )
+
+            tablo = pd.DataFrame({
+
+                "Gösterge": [
+
+                    "RSI",
+
+                    "Hacim Oranı",
+
+                    "Hacim Devamlılığı",
+
+                    "İşlem Değeri",
+
+                    "CMF",
+
+                    "ATR %",
+
+                    "Kovalama Riski",
+
+                    "Erken Hareket"
+
+                ],
+
+                "Değer": [
+
+                    round(
+                        sonuc["RSI"],
+                        1
+                    ),
+
+                    round(
+                        sonuc[
+                            "Hacim Oranı"
+                        ],
+                        2
+                    ),
+
+                    round(
+                        sonuc[
+                            "Hacim Devam"
+                        ],
+                        2
+                    ),
+
+                    f"{sonuc['İşlem Değeri']:,.0f} TL",
+
+                    round(
+                        sonuc["CMF"],
+                        3
+                    ),
+
+                    round(
+                        sonuc["ATR %"],
+                        2
+                    ),
+
+                    sonuc[
+                        "Kovalama"
+                    ],
+
+                    sonuc[
+                        "Erken Hareket"
+                    ]
+
+                ]
+
+            })
+
+            st.dataframe(
+
+                tablo,
+
+                use_container_width=True,
+
+                hide_index=True
+
+            )
+
+            st.subheader(
+                "🎯 Teknik Bölgeler"
             )
 
             h1, h2, h3 = st.columns(3)
 
             h1.metric(
+
+                "Destek",
+
+                f"{sonuc['Destek']:.2f} TL"
+
+            )
+
+            h2.metric(
+
                 "Hedef Bölgesi",
+
                 (
                     f"{sonuc['Hedef Alt']:.2f}"
                     " - "
                     f"{sonuc['Hedef Üst']:.2f}"
                     " TL"
                 )
-            )
 
-            h2.metric(
-                "Destek",
-                f"{sonuc['Destek']:.2f} TL"
             )
 
             h3.metric(
-                "Zarar Kes",
-                f"{sonuc['Zarar Kes']:.2f} TL"
-            )
 
-            st.subheader(
-                "📈 Fiyat Grafiği"
+                "Zarar Kes",
+
+                f"{sonuc['Zarar Kes']:.2f} TL"
+
             )
 
             grafik = pd.DataFrame({
 
                 "Kapanış":
-                tek_veri["Close"],
+                veri["Close"],
 
                 "MA20":
-                tek_veri["Close"]
+                veri["Close"]
                 .rolling(20)
                 .mean(),
 
                 "MA50":
-                tek_veri["Close"]
+                veri["Close"]
                 .rolling(50)
                 .mean()
 
             })
 
             st.line_chart(
-                grafik.tail(120)
+                grafik.tail(150)
             )
 
 
 # ==================================================
-# GENİŞ BIST TARAMA
+# BIST TARAMA
 # ==================================================
 
 with sekme2:
 
     st.subheader(
-        "📡 Geniş BIST Tarama"
+        "📡 V17 Akıllı BIST Taraması"
     )
 
-    st.write(
-        f"Tarama listesinde "
-        f"{len(BIST_HISSELERI)} "
-        f"benzersiz hisse bulunuyor."
-    )
-
-    st.warning(
-        "Geniş tarama birkaç dakika sürebilir. "
-        "Tarama sırasında sayfayı kapatmayın."
-    )
-
-    tarama_adedi = st.selectbox(
+    adet = st.selectbox(
 
         "Tarama kapsamı",
 
         [
+
             50,
+
             100,
+
             200,
+
             "TÜM LİSTE"
+
         ],
 
-        index=3
+        index=0
 
     )
 
     if st.button(
 
-        "🦅 GENİŞ BIST TARAMASINI BAŞLAT",
+        "🦅 AKILLI TARAMAYI BAŞLAT",
 
         use_container_width=True
 
     ):
 
-        if tarama_adedi == "TÜM LİSTE":
+        if adet == "TÜM LİSTE":
 
-            secilenler = (
+            secilen = (
                 BIST_HISSELERI
             )
 
         else:
 
-            secilenler = (
+            secilen = (
                 BIST_HISSELERI[
-                    :tarama_adedi
+                    :adet
                 ]
             )
-
-        baslangic = time.time()
 
         ilerleme = st.progress(0)
 
@@ -903,17 +1512,22 @@ with sekme2:
 
         sonuclar = []
 
+        baslangic = time.time()
+
         toplam = len(
-            secilenler
+            secilen
         )
 
         for i, kod in enumerate(
-            secilenler
+            secilen
         ):
 
             durum.write(
-                f"Taranıyor: {kod} "
+
+                f"Analiz: {kod} "
+
                 f"({i + 1}/{toplam})"
+
             )
 
             try:
@@ -922,7 +1536,7 @@ with sekme2:
 
                     kod + ".IS",
 
-                    period="1y",
+                    period="2y",
 
                     interval="1d",
 
@@ -932,21 +1546,19 @@ with sekme2:
 
                 )
 
-                if isinstance(
-                    veri.columns,
-                    pd.MultiIndex
-                ):
-
-                    veri.columns = (
-                        veri.columns
-                        .get_level_values(0)
-                    )
-
-                sonuc = hisse_analiz(
+                veri = tek_seviye(
                     veri
                 )
 
-                if sonuc is not None:
+                sonuc = hisse_analiz(
+
+                    veri,
+
+                    piyasa_puani
+
+                )
+
+                if sonuc:
 
                     sonuclar.append({
 
@@ -955,53 +1567,45 @@ with sekme2:
 
                         "Fiyat":
                         round(
-                            sonuc[
-                                "Fiyat"
-                            ],
+                            sonuc["Fiyat"],
                             2
                         ),
 
                         "Spek":
-                        sonuc[
-                            "Spek Puanı"
-                        ],
+                        sonuc["Spek"],
 
                         "Sinyal":
-                        sonuc[
-                            "Sinyal"
-                        ],
+                        sonuc["Sinyal"],
+
+                        "Güven":
+                        sonuc["Güven"],
 
                         "Trend":
+                        sonuc["Trend"],
+
+                        "Haftalık":
+                        sonuc["Haftalık"],
+
+                        "Yeni Güç":
                         sonuc[
-                            "Trend Durumu"
+                            "Yeni Güçlenme"
                         ],
 
-                        "Toplama":
-                        sonuc[
-                            "Toplama"
-                        ],
-
-                        "Toplama Gücü":
-                        sonuc[
-                            "Toplama Durumu"
-                        ],
-
-                        "Erken Hareket":
+                        "Erken":
                         sonuc[
                             "Erken Hareket"
                         ],
 
-                        "Dağıtım":
-                        sonuc[
-                            "Dağıtım"
-                        ],
-
                         "Risk":
-                        sonuc[
-                            "Risk"
-                        ],
+                        sonuc["Risk"],
 
-                        "Hacim Oranı":
+                        "RSI":
+                        round(
+                            sonuc["RSI"],
+                            1
+                        ),
+
+                        "Hacim":
                         round(
                             sonuc[
                                 "Hacim Oranı"
@@ -1009,13 +1613,24 @@ with sekme2:
                             2
                         ),
 
-                        "RSI":
+                        "Hacim Devam":
                         round(
                             sonuc[
-                                "RSI"
+                                "Hacim Devam"
                             ],
-                            1
-                        )
+                            2
+                        ),
+
+                        "ATR %":
+                        round(
+                            sonuc["ATR %"],
+                            2
+                        ),
+
+                        "Kovalama":
+                        sonuc[
+                            "Kovalama"
+                        ]
 
                     })
 
@@ -1031,9 +1646,13 @@ with sekme2:
                         i + 1
                     )
 
-                    / toplam
+                    /
 
-                    * 100
+                    toplam
+
+                    *
+
+                    100
 
                 )
 
@@ -1048,159 +1667,287 @@ with sekme2:
             )
 
             tablo = (
+
                 tablo
+
                 .sort_values(
-                    "Spek",
-                    ascending=False
+
+                    [
+
+                        "Spek",
+
+                        "Risk"
+
+                    ],
+
+                    ascending=[
+
+                        False,
+
+                        True
+
+                    ]
+
                 )
+
                 .reset_index(
                     drop=True
                 )
+
             )
 
             sure = round(
+
                 time.time()
-                - baslangic,
+
+                -
+
+                baslangic,
+
                 1
+
             )
 
             st.success(
-                f"Tarama tamamlandı. "
-                f"{len(tablo)} hisse analiz edildi. "
+
+                f"{len(tablo)} hisse "
+
+                f"analiz edildi. "
+
                 f"Süre: {sure} saniye."
+
             )
 
-            o1, o2, o3, o4 = (
+            m1, m2, m3, m4 = (
                 st.columns(4)
             )
 
-            o1.metric(
-                "Analiz Edilen",
-                len(tablo)
-            )
+            m1.metric(
 
-            o2.metric(
                 "Güçlü AL",
+
                 len(
+
                     tablo[
+
                         tablo[
                             "Sinyal"
                         ]
-                        == "🟢 GÜÇLÜ AL"
+
+                        ==
+
+                        "🟢 GÜÇLÜ AL"
+
                     ]
+
                 )
+
             )
 
-            o3.metric(
-                "Erken Hareket",
-                len(
-                    tablo[
-                        tablo[
-                            "Erken Hareket"
-                        ]
-                        >= 70
-                    ]
-                )
-            )
+            m2.metric(
 
-            o4.metric(
-                "Yüksek Dağıtım",
+                "Yeni Güçlenen",
+
                 len(
+
                     tablo[
+
                         tablo[
-                            "Dağıtım"
+                            "Yeni Güç"
                         ]
+
                         >= 60
+
                     ]
+
                 )
+
+            )
+
+            m3.metric(
+
+                "Yüksek Güven",
+
+                len(
+
+                    tablo[
+
+                        tablo[
+                            "Güven"
+                        ]
+
+                        ==
+
+                        "🟢 Yüksek"
+
+                    ]
+
+                )
+
+            )
+
+            m4.metric(
+
+                "Aşırı Isınmış",
+
+                len(
+
+                    tablo[
+
+                        tablo[
+                            "Sinyal"
+                        ]
+
+                        ==
+
+                        "🔥 AŞIRI ISINMIŞ"
+
+                    ]
+
+                )
+
             )
 
             st.subheader(
-                "🏆 En Güçlü 20"
+                "🏆 En Kaliteli 20"
             )
 
             st.dataframe(
+
                 tablo.head(20),
+
                 use_container_width=True,
+
                 hide_index=True
+
             )
 
             st.subheader(
-                "🟢 Güçlü AL Adayları"
+                "🆕 Yeni Güçlenenler"
             )
 
-            guclu_al = tablo[
+            yeni = tablo[
 
-                tablo[
-                    "Sinyal"
-                ].isin([
+                (
 
-                    "🟢 GÜÇLÜ AL",
+                    tablo[
+                        "Yeni Güç"
+                    ]
+                    >= 60
 
-                    "🟩 AL / İZLE"
+                )
 
-                ])
+                &
+
+                (
+
+                    tablo[
+                        "Risk"
+                    ]
+                    <= 45
+
+                )
 
             ]
 
             st.dataframe(
-                guclu_al,
+
+                yeni,
+
                 use_container_width=True,
+
                 hide_index=True
+
             )
 
             st.subheader(
-                "🚀 Erken Hareket Radarı"
+                "🟢 Güçlü AL"
+            )
+
+            guclu = tablo[
+
+                tablo[
+                    "Sinyal"
+                ]
+
+                ==
+
+                "🟢 GÜÇLÜ AL"
+
+            ]
+
+            st.dataframe(
+
+                guclu,
+
+                use_container_width=True,
+
+                hide_index=True
+
+            )
+
+            st.subheader(
+                "🚀 Erken Hareket"
             )
 
             erken = tablo[
 
-                tablo[
-                    "Erken Hareket"
-                ] >= 70
+                (
+
+                    tablo[
+                        "Erken"
+                    ]
+                    >= 70
+
+                )
+
+                &
+
+                (
+
+                    tablo[
+                        "Risk"
+                    ]
+                    <= 50
+
+                )
 
             ]
 
             st.dataframe(
+
                 erken,
+
                 use_container_width=True,
+
                 hide_index=True
+
             )
 
             st.subheader(
-                "🧲 Toplama İhtimali"
+                "🔥 Aşırı Isınmış"
             )
 
-            toplama = tablo[
+            isinmis = tablo[
 
                 tablo[
-                    "Toplama"
-                ] >= 70
+                    "Sinyal"
+                ]
+
+                ==
+
+                "🔥 AŞIRI ISINMIŞ"
 
             ]
 
             st.dataframe(
-                toplama,
+
+                isinmis,
+
                 use_container_width=True,
+
                 hide_index=True
-            )
 
-            st.subheader(
-                "🚨 Dağıtım Riski"
-            )
-
-            dagitim = tablo[
-
-                tablo[
-                    "Dağıtım"
-                ] >= 60
-
-            ]
-
-            st.dataframe(
-                dagitim,
-                use_container_width=True,
-                hide_index=True
             )
 
             st.subheader(
@@ -1217,9 +1964,14 @@ with sekme2:
 
                     tablo[
                         "Hisse"
-                    ].str.contains(
+                    ]
+
+                    .str.contains(
+
                         arama,
+
                         na=False
+
                     )
 
                 ]
@@ -1229,35 +1981,42 @@ with sekme2:
                 gorunen = tablo
 
             st.dataframe(
+
                 gorunen,
+
                 use_container_width=True,
+
                 hide_index=True
+
             )
 
             csv = (
+
                 tablo
+
                 .to_csv(
+
                     index=False
+
                 )
+
                 .encode(
                     "utf-8-sig"
                 )
+
             )
 
             st.download_button(
 
-                "📥 SONUÇLARI CSV OLARAK İNDİR",
+                "📥 V17 SONUÇLARINI İNDİR",
 
                 data=csv,
 
                 file_name=(
-                    "spek_avcisi_v16"
-                    "_bist_tarama.csv"
+                    "spek_avcisi_v17.csv"
                 ),
 
-                mime=(
-                    "text/csv"
-                ),
+                mime="text/csv",
 
                 use_container_width=True
 
@@ -1266,8 +2025,11 @@ with sekme2:
         else:
 
             st.error(
-                "Hiçbir hisseden "
-                "yeterli veri alınamadı."
+
+                "Tarama sonucunda "
+
+                "yeterli veri bulunamadı."
+
             )
 
 
@@ -1278,26 +2040,26 @@ with sekme2:
 with sekme3:
 
     st.subheader(
-        "ℹ️ V16 Hakkında"
+        "🧠 V17 Modeli"
     )
 
     st.write(
-        "Spek Avcısı; günlük fiyat, "
-        "hacim, RSI, hareketli ortalama "
-        "ve CMF verilerinden teknik "
-        "olasılık puanı üretir."
+        "V17; fiyat, trend, RSI, "
+        "hacim, hacim devamlılığı, "
+        "para akışı, haftalık trend, "
+        "işlem değeri, ATR ve piyasa "
+        "trendini birlikte değerlendirir."
     )
 
-    st.write(
-        "Toplama, dağıtım ve erken hareket "
-        "ifadeleri teknik model tahminidir. "
-        "Gerçek emir defteri, kademe, "
+    st.warning(
+        "Sinyaller teknik olasılık "
+        "hesaplarıdır. Gerçek emir defteri, "
         "kurum takası veya belirli kişilerin "
         "işlemlerini doğrudan göstermez."
     )
 
-    st.warning(
+    st.error(
         "Bu uygulama yatırım tavsiyesi "
-        "vermez ve kesin kazanç garantisi "
-        "sunmaz."
+        "değildir. Sinyaller kesin kazanç "
+        "garantisi vermez."
     )
