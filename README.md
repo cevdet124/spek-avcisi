@@ -1,31 +1,15 @@
-# Spek Avcısı V19 Pro + Backtest
+# Spek Avcısı V20 Pro
 
-V18 Pro analiz motoruna geçmiş performans testi eklenmiş sürüm.
+V19 analiz motoruna profesyonel dinamik çıkış kuralları eklenmiştir.
 
-## Yeni özellik
-Backtest sekmesi, geçmişte oluşan sinyalleri yalnızca o tarihe kadar bilinen
-verilerle hesaplar ve seçilen 5, 10 veya 20 işlem günü sonrasındaki performansı
-ölçer.
-
-## Gösterilen ölçümler
-- İşlem sayısı
-- Başarı oranı
-- Ortalama ve medyan net getiri
-- Bileşik getiri
-- Maksimum düşüş
-- Kâr faktörü
-- Ortalama lehte ve aleyhte hareket
-- Geçmiş sinyal tablosu
-- Bileşik getiri eğrisi
-
-## Dosyalar
-- `app.py`
-- `engine.py`
-- `backtest.py`
-- `universe.py`
-- `requirements.txt`
+## Dinamik backtest
+- ATR tabanlı zarar kes
+- İlk hedefte kısmi kâr al
+- İkinci hedef
+- Hareketli stop
+- Trend veya risk bozulduğunda çıkış
+- İşlem maliyeti
 
 ## Önemli
 Geçmiş performans gelecekteki sonucu garanti etmez. Backtest; veri kalitesi,
-işlem maliyetleri, likidite, fiyat kayması ve model seçimi gibi etkenlere
-duyarlıdır.
+likidite, fiyat kayması ve seçilen ayarlara duyarlıdır.

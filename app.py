@@ -7,12 +7,12 @@ from backtest import BacktestConfig, run_backtest
 from universe import BIST_SYMBOLS
 
 st.set_page_config(
-    page_title="Spek Avcısı V19 Pro + Backtest",
+    page_title="Spek Avcısı V20 Pro",
     page_icon="🦅",
     layout="wide",
 )
 
-st.title("🦅 Spek Avcısı V19 Pro + Backtest")
+st.title("🦅 Spek Avcısı V20 Pro")
 st.caption(
     "Çok katmanlı teknik karar destek sistemi: trend, kurumsal para, "
     "hareket hazırlığı, sahte hareket, risk ve işlem kalitesi."
@@ -209,7 +209,7 @@ with tab2:
 
 
 with tab3:
-    st.subheader("🧪 Geçmiş Performans Testi")
+    st.subheader("🧪 Dinamik Giriş / Çıkış Backtesti")
     st.caption(
         "Backtest yalnızca o tarihe kadar bilinen verileri kullanır; "
         "gelecek fiyatlar sadece sonucu ölçmek için kullanılır."
@@ -223,8 +223,8 @@ with tab3:
 
     b1, b2, b3 = st.columns(3)
     horizon = b1.selectbox(
-        "Sonuç ölçüm süresi",
-        [5, 10, 20],
+        "Maksimum taşıma süresi",
+        [10, 20, 30],
         index=1,
         format_func=lambda x: f"{x} işlem günü",
     )
@@ -233,22 +233,20 @@ with tab3:
 
     b4, b5, b6 = st.columns(3)
     min_confidence = b4.slider("Minimum Güven", 40, 85, 55, 5)
-    step = b5.selectbox(
-        "Sinyal kontrol sıklığı",
-        [1, 3, 5],
-        index=1,
-        format_func=lambda x: f"Her {x} günde",
-    )
-    fee_bps = b6.number_input(
-        "Toplam işlem maliyeti (baz puan)",
-        min_value=0.0,
-        max_value=200.0,
-        value=20.0,
-        step=5.0,
-    )
+    atr_stop = b5.selectbox("ATR zarar kes", [1.5, 2.0, 2.5, 3.0], index=1)
+    trailing_atr = b6.selectbox("ATR hareketli stop", [1.5, 2.0, 2.5, 3.0], index=1)
 
-    if st.button("🧪 BACKTESTİ BAŞLAT", use_container_width=True):
-        with st.spinner("Geçmiş sinyaller test ediliyor..."):
+    b7, b8, b9 = st.columns(3)
+    target1 = b7.selectbox("1. hedef ATR", [1.5, 2.0, 2.5], index=1)
+    target2 = b8.selectbox("2. hedef ATR", [2.5, 3.5, 4.5], index=1)
+    fee_bps = b9.number_input(
+        "Toplam işlem maliyeti (baz puan)",
+        min_value=0.0, max_value=200.0, value=20.0, step=5.0,
+    )
+    step = 3
+
+    if st.button("🧪 DİNAMİK BACKTESTİ BAŞLAT", use_container_width=True):
+        with st.spinner("Dinamik çıkış kuralları test ediliyor..."):
             bt_frame = cached_one(bt_symbol)
             config = BacktestConfig(
                 horizon=int(horizon),
@@ -257,6 +255,10 @@ with tab3:
                 max_risk=int(max_risk),
                 min_confidence=int(min_confidence),
                 fee_bps=float(fee_bps),
+                atr_stop=float(atr_stop),
+                atr_target_1=float(target1),
+                atr_target_2=float(target2),
+                trailing_atr=float(trailing_atr),
             )
             bt_result = (
                 run_backtest(bt_frame, market_score=market_score, config=config)
@@ -307,7 +309,7 @@ with tab3:
             )
 
 with tab4:
-    st.subheader("V19 Pro ne yapar?")
+    st.subheader("V20 Pro ne yapar?")
     st.write(
         "Model; günlük ve haftalık trend, RSI, MACD, CMF, MFI, OBV, A/D Line, "
         "hacim devamlılığı, ATR, likidite, sıkışma, kırılım ve BIST piyasa "
