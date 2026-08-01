@@ -1,24 +1,24 @@
-# Spek Avcısı V21 Daily Pro
+# Spek Avcısı V22 Portfolio Pro
 
-Günlük kullanım için sadeleştirilmiş, hızlı ve açıklanabilir sürüm.
+V21 Daily Pro üzerine portföy, favoriler, dashboard ve alarm merkezi eklenmiş sürüm.
 
 ## Yeni özellikler
+- Günlük Dashboard
+- Portföy sağlık puanı
+- Portföy analiz tablosu
+- Alarm merkezi
+- Favori hisseler
+- Portföy/favori JSON yedekleme ve geri yükleme
+- Bugünün En İyi 10'u
 - AI Analist yorumları
-- Bugünün En İyi 10 Fırsatı
-- Hızlı tarama
-- Kalite sıralaması
-- Neden seçildi / riskler
-- Modüler yapı
 
-## Dosyalar
-- app.py
-- config.py
-- data.py
-- indicators.py
-- engine.py
-- scanner.py
-- universe.py
-- requirements.txt
+## Kalıcılık sınırı
+Streamlit Community Cloud yerel dosya sisteminde kalıcı kullanıcı verisi garanti etmez.
+Bu nedenle portföy ve favoriler oturum içinde tutulur ve JSON olarak dışa aktarılabilir.
+
+## Alarm sınırı
+Bu sürüm uygulama içi alarm merkezi üretir. Arka planda telefon bildirimi veya e-posta
+gönderimi yapmaz.
 
 ## Uyarı
 Bu uygulama yatırım tavsiyesi değildir.
