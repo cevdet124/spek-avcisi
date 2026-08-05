@@ -1,4 +1,5 @@
-streamlit>=1.49,<2
-yfinance>=1.0,<2
-pandas>=2.2,<3
-numpy>=2.0,<3
+streamlit==1.49.1
+yfinance==0.2.65
+pandas==2.2.3
+numpy==2.2.6
+starlette==0.47.3
