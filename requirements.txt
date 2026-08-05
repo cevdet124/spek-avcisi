@@ -2,4 +2,3 @@ streamlit==1.49.1
 yfinance==0.2.65
 pandas==2.2.3
 numpy==2.2.6
-starlette==0.47.3
